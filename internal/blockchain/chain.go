@@ -47,7 +47,7 @@ func InitializeBlockchain() {
 func AddBlock(newBlock Block) error {
     lastBlock := Blockchain[len(Blockchain)-1]
     if newBlock.PreviousHash != lastBlock.Hash {
-        return errors.New("Invalid previous hash")
+        return errors.New("invalid previous hash")
     }
     newBlock.Hash = newBlock.CalculateHash()
     Blockchain = append(Blockchain, newBlock)
@@ -92,3 +92,6 @@ func GetBlockByIndex(index string) (Block, error) {
 }
 
 
+func GetBlockchain() []Block {
+    return Blockchain
+}

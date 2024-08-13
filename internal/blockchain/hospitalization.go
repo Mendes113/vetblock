@@ -1,0 +1,181 @@
+package blockchain
+
+import (
+	"encoding/json"
+	"errors"
+	"log"
+	"time"
+)
+
+const (
+	ErrInvalidHospitalizationID = "id da hospitalização inválido"
+	ErrInvalidPatientID         = "id do paciente inválido"
+	ErrInvalidStartDate         = "data de início inválida"
+	ErrInvalidEndDate           = "data de término inválida"
+	ErrInvalidReason            = "motivo inválido"
+	ErrInvalidDoctorID          = "id do médico inválido"
+	ErrInvalidMedications       = "lista de medicamentos inválida"
+)
+
+type Hospitalization struct {
+	ID          string   `json:"id"`
+	PatientID   string   `json:"patient_id"`
+	StartDate   string   `json:"start_date"`
+	EndDate     string   `json:"end_date"`
+	Reason      string   `json:"reason"`
+	DoctorID    string   `json:"doctor_id"`
+	Medications []string `json:"medications"`
+}
+
+func ValidateHospitalization(hospitalization Hospitalization) error {
+	validations := []struct {
+		condition bool
+		errMsg    string
+	}{
+		{hospitalization.ID == "", ErrInvalidHospitalizationID},
+		{hospitalization.PatientID == "", ErrInvalidPatientID},
+		{hospitalization.StartDate == "", ErrInvalidStartDate},
+		{hospitalization.EndDate == "", ErrInvalidEndDate},
+		{hospitalization.Reason == "", ErrInvalidReason},
+		{hospitalization.DoctorID == "", ErrInvalidDoctorID},
+		{len(hospitalization.Medications) == 0, ErrInvalidMedications},
+	}
+
+	for _, v := range validations {
+		if v.condition {
+			return errors.New(v.errMsg)
+		}
+	}
+
+	return nil
+}
+
+func AddHospitalizationTransaction(hospitalization Hospitalization, sender, receiver string, amount float64) error {
+	// Validação da hospitalização
+	if err := ValidateHospitalization(hospitalization); err != nil {
+		log.Printf("Erro ao validar hospitalização: %v", err)
+		return err
+	}
+
+	hospitalizationJSON, err := json.Marshal(hospitalization)
+	if err != nil {
+		log.Printf("Erro ao converter hospitalização para JSON: %v", err)
+		return err
+	}
+
+	transaction := Transaction{
+		Sender:    sender,
+		Receiver:  receiver,
+		Amount:    amount,
+		Timestamp: time.Unix(time.Now().Unix(), 0),
+		Data:      string(hospitalizationJSON),
+	}
+
+	newBlock := Block{
+		Index:        len(Blockchain) + 1,
+		Timestamp:    time.Now(),
+		Transactions: []Transaction{transaction},
+		Hash:         "",
+		PreviousHash: Blockchain[len(Blockchain)-1].Hash,
+	}
+
+	difficulty := 2
+	newBlock.MineBlock(difficulty)
+	Blockchain = append(Blockchain, newBlock)
+	log.Printf("Bloco adicionado à blockchain: %v", newBlock)
+
+	return nil
+}
+
+func GetHospitalizationByID(id string) (*Hospitalization, error) {
+	log.Printf("Buscando hospitalização por ID: %v", id)
+	for _, block := range Blockchain {
+		for _, transaction := range block.Transactions {
+			var hospitalization Hospitalization
+			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+			if err != nil {
+				log.Printf("Erro ao decodificar hospitalização: %v", err)
+				continue
+			}
+			if hospitalization.ID == id {
+				return &hospitalization, nil
+			}
+		}
+	}
+	return nil, errors.New("Hospitalization not found")
+}
+
+func GetHospitalizationsByPatientID(patientID string) ([]Hospitalization, error) {
+	log.Printf("Buscando hospitalizações por ID do paciente: %v", patientID)
+	var hospitalizations []Hospitalization
+	for _, block := range Blockchain {
+		for _, transaction := range block.Transactions {
+			var hospitalization Hospitalization
+			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+			if err != nil {
+				log.Printf("Erro ao decodificar hospitalização: %v", err)
+				continue
+			}
+			if hospitalization.PatientID == patientID {
+				hospitalizations = append(hospitalizations, hospitalization)
+			}
+		}
+	}
+	return hospitalizations, nil
+}
+
+func GetHospitalizationsByDoctorID(doctorID string) ([]Hospitalization, error) {
+	log.Printf("Buscando hospitalizações por ID do médico: %v", doctorID)
+	var hospitalizations []Hospitalization
+	for _, block := range Blockchain {
+		for _, transaction := range block.Transactions {
+			var hospitalization Hospitalization
+			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+			if err != nil {
+				log.Printf("Erro ao decodificar hospitalização: %v", err)
+				continue
+			}
+			if hospitalization.DoctorID == doctorID {
+				hospitalizations = append(hospitalizations, hospitalization)
+			}
+		}
+	}
+	return hospitalizations, nil
+}
+//talvez deva ir para medication.go
+func GetMedicationByHospitalizationID(id string) ([]string, error) {
+	log.Printf("Buscando medicamentos por ID da hospitalização: %v", id)
+	for _, block := range Blockchain {
+		for _, transaction := range block.Transactions {
+			var hospitalization Hospitalization
+			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+			if err != nil {
+				log.Printf("Erro ao decodificar hospitalização: %v", err)
+				continue
+			}
+			if hospitalization.ID == id {
+				return hospitalization.Medications, nil
+			}
+		}
+	}
+	return nil, errors.New("Medication not found")
+}
+
+
+func GetHospitalizations() ([]Hospitalization, error) {
+	log.Printf("Buscando todas as hospitalizações")
+	var hospitalizations []Hospitalization
+	for _, block := range Blockchain {
+		for _, transaction := range block.Transactions {
+			var hospitalization Hospitalization
+			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+			if err != nil {
+				log.Printf("Erro ao decodificar hospitalização: %v", err)
+				continue
+			}
+			hospitalizations = append(hospitalizations, hospitalization)
+		}
+	}
+	return hospitalizations, nil
+}
+

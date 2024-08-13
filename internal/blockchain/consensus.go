@@ -32,9 +32,23 @@ func isHashValid(hash string, difficulty int) bool {
 func AddBlockWithConsensus(newBlock Block, difficulty int) error {
     lastBlock := Blockchain[len(Blockchain)-1]
     if newBlock.PreviousHash != lastBlock.Hash {
-        return fmt.Errorf("Invalid previous hash")
+        return fmt.Errorf("invalid previous hash")
     }
     newBlock.MineBlock(difficulty)
     Blockchain = append(Blockchain, newBlock)
     return nil
+}
+
+func IsValid() bool {
+    for i := 1; i < len(Blockchain); i++ {
+        currentBlock := Blockchain[i]
+        previousBlock := Blockchain[i-1]
+        if currentBlock.Hash != currentBlock.CalculateHash() {
+            return false
+        }
+        if currentBlock.PreviousHash != previousBlock.Hash {
+            return false
+        }
+    }
+    return true
 }
