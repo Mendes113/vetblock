@@ -4,6 +4,7 @@ import (
 	"log"
 	"strconv"
 	"vetblock/internal/blockchain"
+	"vetblock/internal/db"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -11,7 +12,7 @@ import (
 
 // Handler para agendar uma consulta
 func ScheduleConsultationHandler(c *fiber.Ctx) error {
-	var consultation blockchain.Consultation
+	var consultation db.Consultation
 	if err := c.BodyParser(&consultation); err != nil {
 		log.Printf("Erro ao analisar a solicitação: %v", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

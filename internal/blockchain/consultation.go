@@ -5,40 +5,17 @@ import (
 	"errors"
 	"log"
 	"time"
+	"vetblock/internal/db"
 
 	"github.com/google/uuid"
 )
 
-type Consultation struct {
-	ID                      uuid.UUID `json:"id"`
-	AnimalID                uint64    `json:"animal_id"`
-	VeterinaryID            uint64    `json:"veterinary_id"`
-	ConsultationDate        string    `json:"consultation_date"`
-	ConsultationHour        string    `json:"consultation_hour"`
-	ConsultationType        string    `json:"consultation_type"`
-	ConsultationDescription string    `json:"consultation_description"`
-	ConsultationPrescription string   `json:"consultation_prescription"`
-	ConsultationPrice       float64   `json:"consultation_price"`
-	ConsultationStatus      string    `json:"consultation_status"`
-}
-
-
-type ConsultationHistory struct {
-    ConsultationID uuid.UUID `json:"consultation_id"`
-    Changes        []Change  `json:"changes"`
-    Timestamp      time.Time `json:"timestamp"`
-}
-
-type Change struct {
-    Field    string `json:"field"`
-    OldValue string `json:"old_value"`
-    NewValue string `json:"new_value"`
-}
 
 
 
 
-func AddConsultationTransaction(consultation Consultation, sender, receiver string, amount float64) error {
+
+func AddConsultationTransaction(consultation db.Consultation, sender, receiver string, amount float64) error {
 
 	// Validação da consulta
 	if err := ValidateConsultation(consultation); err != nil {
@@ -85,12 +62,12 @@ func AddConsultationTransaction(consultation Consultation, sender, receiver stri
 }
 
 // Função para buscar uma consulta por ID na blockchain
-func GetConsultationByID(id uuid.UUID) (*Consultation, error) {
+func GetConsultationByID(id uuid.UUID) (*db.Consultation, error) {
 	log.Printf("Buscando consulta por ID: %v", id)
 	// Itera sobre cada bloco na blockchain
 	for _, block := range Blockchain {
 		for _, transaction := range block.Transactions {
-			var consultation Consultation
+			var consultation db.Consultation
 			err := json.Unmarshal([]byte(transaction.Data), &consultation)
 			if err != nil {
 				log.Printf("Erro ao decodificar transação: %v", err)
@@ -107,12 +84,12 @@ func GetConsultationByID(id uuid.UUID) (*Consultation, error) {
 }
 
 // Função para buscar uma consulta por ID do animal na blockchain
-func GetConsultationByAnimalID(id uint64) ([]Consultation, error) {
+func GetConsultationByAnimalID(id uint64) ([]db.Consultation, error) {
 	log.Printf("Buscando consultas por Animal ID: %v", id)
-	var consultations []Consultation
+	var consultations []db.Consultation
 	for _, block := range Blockchain {
 		for _, transaction := range block.Transactions {
-			var consultation Consultation
+			var consultation db.Consultation
 			err := json.Unmarshal([]byte(transaction.Data), &consultation)
 			if err != nil {
 				log.Printf("Erro ao decodificar transação: %v", err)
@@ -129,12 +106,12 @@ func GetConsultationByAnimalID(id uint64) ([]Consultation, error) {
 }
 
 // Função para buscar uma consulta por ID do veterinário na blockchain
-func GetConsultationByVeterinaryID(id uint64) ([]Consultation, error) {
+func GetConsultationByVeterinaryID(id uint64) ([]db.Consultation, error) {
 	log.Printf("Buscando consultas por Veterinary ID: %v", id)
-	var consultations []Consultation
+	var consultations []db.Consultation
 	for _, block := range Blockchain {
 		for _, transaction := range block.Transactions {
-			var consultation Consultation
+			var consultation db.Consultation
 			err := json.Unmarshal([]byte(transaction.Data), &consultation)
 			if err != nil {
 				log.Printf("Erro ao decodificar transação: %v", err)
@@ -151,34 +128,34 @@ func GetConsultationByVeterinaryID(id uint64) ([]Consultation, error) {
 }
 
 // Função para agendar consulta
-func ScheduleConsultation(consultation Consultation, sender, receiver string, amount float64) error {
+func ScheduleConsultation(consultation db.Consultation, sender, receiver string, amount float64) error {
 	log.Printf("Agendando consulta: %v", consultation)
 	consultation.ConsultationStatus = "Scheduled"
 	return AddConsultationTransaction(consultation, sender, receiver, amount)
 }
 
 // Função para cancelar consulta
-func CancelConsultation(consultation Consultation, sender, receiver string, amount float64) error {
+func CancelConsultation(consultation db.Consultation, sender, receiver string, amount float64) error {
 	log.Printf("Cancelando consulta: %v", consultation)
 	consultation.ConsultationStatus = "Canceled"
 	return AddConsultationTransaction(consultation, sender, receiver, amount)
 }
 
 // Função para confirmar consulta
-func ConfirmConsultation(consultation Consultation, sender, receiver string, amount float64) error {
+func ConfirmConsultation(consultation db.Consultation, sender, receiver string, amount float64) error {
 	log.Printf("Confirmando consulta: %v", consultation)
 	consultation.ConsultationStatus = "Confirmed"
 	return AddConsultationTransaction(consultation, sender, receiver, amount)
 }
 
 // Função para atualizar consulta
-func UpdateConsultation(consultation Consultation, sender, receiver string, amount float64) error {
+func UpdateConsultation(consultation db.Consultation, sender, receiver string, amount float64) error {
 	log.Printf("Atualizando consulta: %v", consultation)
 	return AddConsultationTransaction(consultation, sender, receiver, amount)
 }
 
-func AddConsultationHistory(consultation Consultation, changes []Change) {
-    history := ConsultationHistory{
+func AddConsultationHistory(consultation db.Consultation, changes []db.Change) {
+    history := db.ConsultationHistory{
         ConsultationID: consultation.ID,
         Changes:        changes,
         Timestamp:      time.Now(),
@@ -187,11 +164,11 @@ func AddConsultationHistory(consultation Consultation, changes []Change) {
     log.Printf("Histórico de consulta adicionado: %v", history)
 }
 
-func TrackChanges(oldConsultation, newConsultation Consultation) []Change {
-    var changes []Change
+func TrackChanges(oldConsultation, newConsultation db.Consultation) []db.Change {
+    var changes []db.Change
     // Comparar os campos relevantes e adicionar ao slice de mudanças
     if oldConsultation.ConsultationStatus != newConsultation.ConsultationStatus {
-        changes = append(changes, Change{
+        changes = append(changes, db.Change{
             Field:    "ConsultationStatus",
             OldValue: oldConsultation.ConsultationStatus,
             NewValue: newConsultation.ConsultationStatus,
@@ -202,7 +179,7 @@ func TrackChanges(oldConsultation, newConsultation Consultation) []Change {
 }
 
 
-func ValidateConsultation(consultation Consultation) error {
+func ValidateConsultation(consultation db.Consultation) error {
     if consultation.AnimalID == 0 {
         return errors.New("AnimalID não pode ser zero")
     }

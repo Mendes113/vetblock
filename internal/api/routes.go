@@ -2,7 +2,7 @@ package api
 
 import (
 	"vetblock/internal/api/handlers"
-	"vetblock/internal/api/middleware"
+	// "vetblock/internal/api/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,7 +15,7 @@ func SetupRoutes(app *fiber.App) {
 	// // Rota pública para login
 	// app.Post("/login", login)
 	protected := app.Group("/api/v1") // Exemplo de prefixo para rotas protegidas
-	protected.Use(middleware.AuthMiddleware())
+	// protected.Use(middleware.AuthMiddleware())
 
 
     protected.Get("/blocks", handlers.GetBlockchain)

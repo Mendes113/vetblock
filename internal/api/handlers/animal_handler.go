@@ -1,13 +1,15 @@
 package handlers
 
 import (
-    "github.com/gofiber/fiber/v2"
-    "vetblock/internal/blockchain"
+	"vetblock/internal/blockchain"
+	"vetblock/internal/db"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // Adiciona um novo animal
 func AddAnimalTransactionHandler(c *fiber.Ctx) error {
-    var animal blockchain.Animal
+    var animal db.Animal
     if err := c.BodyParser(&animal); err != nil {
         return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
     }
@@ -40,7 +42,7 @@ func GetAnimalByIDHandler(c *fiber.Ctx) error {
 // Atualiza as informações de um animal
 func UpdateAnimal(c *fiber.Ctx) error {
     id := c.Params("id")
-    var animal blockchain.Animal
+    var animal db.Animal
     if err := c.BodyParser(&animal); err != nil {
         return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
     }

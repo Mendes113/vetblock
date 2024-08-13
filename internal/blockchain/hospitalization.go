@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"time"
+	"vetblock/internal/db"
 )
 
 const (
@@ -17,17 +18,7 @@ const (
 	ErrInvalidMedications       = "lista de medicamentos inválida"
 )
 
-type Hospitalization struct {
-	ID          string   `json:"id"`
-	PatientID   string   `json:"patient_id"`
-	StartDate   string   `json:"start_date"`
-	EndDate     string   `json:"end_date"`
-	Reason      string   `json:"reason"`
-	DoctorID    string   `json:"doctor_id"`
-	Medications []string `json:"medications"`
-}
-
-func ValidateHospitalization(hospitalization Hospitalization) error {
+func ValidateHospitalization(hospitalization db.Hospitalization) error {
 	validations := []struct {
 		condition bool
 		errMsg    string
@@ -50,7 +41,7 @@ func ValidateHospitalization(hospitalization Hospitalization) error {
 	return nil
 }
 
-func AddHospitalizationTransaction(hospitalization Hospitalization, sender, receiver string, amount float64) error {
+func AddHospitalizationTransaction(hospitalization db.Hospitalization, sender, receiver string, amount float64) error {
 	// Validação da hospitalização
 	if err := ValidateHospitalization(hospitalization); err != nil {
 		log.Printf("Erro ao validar hospitalização: %v", err)
@@ -87,11 +78,11 @@ func AddHospitalizationTransaction(hospitalization Hospitalization, sender, rece
 	return nil
 }
 
-func GetHospitalizationByID(id string) (*Hospitalization, error) {
+func GetHospitalizationByID(id string) (*db.Hospitalization, error) {
 	log.Printf("Buscando hospitalização por ID: %v", id)
 	for _, block := range Blockchain {
 		for _, transaction := range block.Transactions {
-			var hospitalization Hospitalization
+			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
 			if err != nil {
 				log.Printf("Erro ao decodificar hospitalização: %v", err)
@@ -105,12 +96,12 @@ func GetHospitalizationByID(id string) (*Hospitalization, error) {
 	return nil, errors.New("Hospitalization not found")
 }
 
-func GetHospitalizationsByPatientID(patientID string) ([]Hospitalization, error) {
+func GetHospitalizationsByPatientID(patientID string) ([]db.Hospitalization, error) {
 	log.Printf("Buscando hospitalizações por ID do paciente: %v", patientID)
-	var hospitalizations []Hospitalization
+	var hospitalizations []db.Hospitalization
 	for _, block := range Blockchain {
 		for _, transaction := range block.Transactions {
-			var hospitalization Hospitalization
+			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
 			if err != nil {
 				log.Printf("Erro ao decodificar hospitalização: %v", err)
@@ -124,12 +115,12 @@ func GetHospitalizationsByPatientID(patientID string) ([]Hospitalization, error)
 	return hospitalizations, nil
 }
 
-func GetHospitalizationsByDoctorID(doctorID string) ([]Hospitalization, error) {
+func GetHospitalizationsByDoctorID(doctorID string) ([]db.Hospitalization, error) {
 	log.Printf("Buscando hospitalizações por ID do médico: %v", doctorID)
-	var hospitalizations []Hospitalization
+	var hospitalizations []db.Hospitalization
 	for _, block := range Blockchain {
 		for _, transaction := range block.Transactions {
-			var hospitalization Hospitalization
+			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
 			if err != nil {
 				log.Printf("Erro ao decodificar hospitalização: %v", err)
@@ -147,7 +138,7 @@ func GetMedicationByHospitalizationID(id string) ([]string, error) {
 	log.Printf("Buscando medicamentos por ID da hospitalização: %v", id)
 	for _, block := range Blockchain {
 		for _, transaction := range block.Transactions {
-			var hospitalization Hospitalization
+			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
 			if err != nil {
 				log.Printf("Erro ao decodificar hospitalização: %v", err)
@@ -162,12 +153,12 @@ func GetMedicationByHospitalizationID(id string) ([]string, error) {
 }
 
 
-func GetHospitalizations() ([]Hospitalization, error) {
+func GetHospitalizations() ([]db.Hospitalization, error) {
 	log.Printf("Buscando todas as hospitalizações")
-	var hospitalizations []Hospitalization
+	var hospitalizations []db.Hospitalization
 	for _, block := range Blockchain {
 		for _, transaction := range block.Transactions {
-			var hospitalization Hospitalization
+			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
 			if err != nil {
 				log.Printf("Erro ao decodificar hospitalização: %v", err)

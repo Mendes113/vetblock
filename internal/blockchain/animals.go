@@ -7,20 +7,12 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"vetblock/internal/db"
 )
-type Animal struct {
-    ID          string    `json:"id"`
-    Name        string    `json:"name"`
-    Species     string    `json:"species"`
-    Breed       string    `json:"breed"`
-    Age         int       `json:"age"`
-    Description string    `json:"description"`
-    Timestamp   time.Time `json:"timestamp"`
-}
 
 
 
-func AddAnimalTransaction(animal Animal, sender, receiver string, amount float64) error {
+func AddAnimalTransaction(animal db.Animal, sender, receiver string, amount float64) error {
     // Converta o objeto Animal para JSON
     animalJSON, err := json.Marshal(animal)
     if err != nil {
@@ -56,13 +48,13 @@ func AddAnimalTransaction(animal Animal, sender, receiver string, amount float64
 
 
 // Função para buscar um animal por ID na blockchain
-func GetAnimalByID(id string) (*Animal, error) {
+func GetAnimalByID(id string) (*db.Animal, error) {
     // Itera sobre cada bloco na blockchain
     for _, block := range Blockchain {
         // Itera sobre cada transação no bloco
         for _, tx := range block.Transactions {
             // Deserializa o campo Data para verificar se contém um animal
-            var animal Animal
+            var animal db.Animal
             err := json.Unmarshal([]byte(tx.Data), &animal)
             if err != nil {
                 return nil, err // Retorna o erro se a deserialização falhar
@@ -80,7 +72,7 @@ func GetAnimalByID(id string) (*Animal, error) {
 
 
 // Atualiza um animal na blockchain
-func UpdateAnimal(id string, updatedAnimal Animal) error {
+func UpdateAnimal(id string, updatedAnimal db.Animal) error {
     // Adicione a lógica para atualizar um animal existente
     // Isso pode envolver encontrar o bloco ou transação correspondente e atualizar as informações
     fmt.Printf("Atualizando animal %s com %v\n", id, updatedAnimal)

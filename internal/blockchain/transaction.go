@@ -1,6 +1,9 @@
 package blockchain
 
-import "time"
+import (
+	"time"
+	"vetblock/internal/db"
+)
 
 type Transaction struct {
     Sender    string    `json:"sender"`
@@ -11,7 +14,7 @@ type Transaction struct {
 }
 
 type AnimalTransaction struct {
-    Animal Animal `json:"animal"`
+    Animal db.Animal `json:"animal"`
     Timestamp time.Time `json:"timestamp"`
 }
 
