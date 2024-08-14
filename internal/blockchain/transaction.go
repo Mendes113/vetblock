@@ -1,6 +1,7 @@
 package blockchain
 
 import (
+	"strconv"
 	"time"
 	"vetblock/internal/db"
 )
@@ -17,6 +18,24 @@ type AnimalTransaction struct {
     Animal db.Animal `json:"animal"`
     Timestamp time.Time `json:"timestamp"`
 }
+
+
+
+func (t *Transaction) String() string {
+    return t.Sender + t.Receiver + strconv.FormatFloat(t.Amount, 'f', -1, 64) + t.Timestamp.String() + t.Data
+}
+
+//create a new transaction
+func NewTransaction(sender, receiver string, amount float64, data string) *Transaction {
+    return &Transaction{
+        Sender:    sender,
+        Receiver:  receiver,
+        Amount:    amount,
+        Timestamp: time.Now(),
+        Data:      data,
+    }
+}
+
 
 
 // // Estrutura para transações de medicações

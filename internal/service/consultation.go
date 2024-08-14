@@ -1,10 +1,11 @@
-package blockchain
+package service
 
 import (
 	"encoding/json"
 	"errors"
 	"log"
 	"time"
+	"vetblock/internal/blockchain"
 	"vetblock/internal/db"
 
 	"github.com/google/uuid"
@@ -32,29 +33,24 @@ func AddConsultationTransaction(consultation db.Consultation, sender, receiver s
 	}
 
 	// Crie uma nova transação para a consulta com o JSON
-	transaction := Transaction{
-		Sender:    sender,
-		Receiver:  receiver,
-		Amount:    amount,
-		Timestamp: time.Now(),
-		Data:      string(consultationJSON), // Armazena o JSON como uma string
-	}
+	transaction := blockchain.NewTransaction(sender, receiver, amount, string(consultationJSON))
 
 	log.Printf("Adicionando transação: %v", transaction)
 
-	newBlock := Block{
-		Index:        len(Blockchain) + 1,
-		Timestamp:    time.Now(),
-		Transactions: []Transaction{transaction},
-		PreviousHash: Blockchain[len(Blockchain)-1].Hash,
-	}
+	// newBlock := Block{
+	// 	Index:        len(Blockchain) + 1,
+	// 	Timestamp:    time.Now(),
+	// 	Transactions: []Transaction{transaction},
+	// 	PreviousHash: Blockchain[len(Blockchain)-1].Hash,
+	// }
+	newBlock := blockchain.NewBlock(len(blockchain.Blockchain)+1, []blockchain.Transaction{*transaction}, blockchain.Blockchain[len(blockchain.Blockchain)-1].Hash)
 
 	log.Printf("[%v] Novo bloco criado: %v", time.Now().Format(time.RFC3339), newBlock)
 
 	// Minerar o bloco e adicioná-lo à blockchain
 	difficulty := 2
 	newBlock.MineBlock(difficulty)
-	Blockchain = append(Blockchain, newBlock)
+	blockchain.Blockchain = append(blockchain.Blockchain, *newBlock)
 
 	log.Printf("Bloco adicionado à blockchain: %v", newBlock)
 
@@ -65,7 +61,7 @@ func AddConsultationTransaction(consultation db.Consultation, sender, receiver s
 func GetConsultationByID(id uuid.UUID) (*db.Consultation, error) {
 	log.Printf("Buscando consulta por ID: %v", id)
 	// Itera sobre cada bloco na blockchain
-	for _, block := range Blockchain {
+	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
 			var consultation db.Consultation
 			err := json.Unmarshal([]byte(transaction.Data), &consultation)
@@ -87,7 +83,7 @@ func GetConsultationByID(id uuid.UUID) (*db.Consultation, error) {
 func GetConsultationByAnimalID(id uint64) ([]db.Consultation, error) {
 	log.Printf("Buscando consultas por Animal ID: %v", id)
 	var consultations []db.Consultation
-	for _, block := range Blockchain {
+	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
 			var consultation db.Consultation
 			err := json.Unmarshal([]byte(transaction.Data), &consultation)
@@ -109,7 +105,7 @@ func GetConsultationByAnimalID(id uint64) ([]db.Consultation, error) {
 func GetConsultationByVeterinaryID(id uint64) ([]db.Consultation, error) {
 	log.Printf("Buscando consultas por Veterinary ID: %v", id)
 	var consultations []db.Consultation
-	for _, block := range Blockchain {
+	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
 			var consultation db.Consultation
 			err := json.Unmarshal([]byte(transaction.Data), &consultation)

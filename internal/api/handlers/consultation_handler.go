@@ -3,9 +3,8 @@ package handlers
 import (
 	"log"
 	"strconv"
-	"vetblock/internal/blockchain"
 	"vetblock/internal/db"
-
+	"vetblock/internal/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -25,7 +24,7 @@ func ScheduleConsultationHandler(c *fiber.Ctx) error {
 	receiver := c.Query("receiver")
 	amount := c.QueryFloat("amount", 0)
 
-	if err := blockchain.ScheduleConsultation(consultation, sender, receiver, amount); err != nil {
+	if err := service.ScheduleConsultation(consultation, sender, receiver, amount); err != nil {
 		log.Printf("Erro ao agendar consulta: %v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Não foi possível agendar a consulta",
@@ -45,7 +44,7 @@ func CancelConsultationHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	consultation, err := blockchain.GetConsultationByID(consultationID)
+	consultation, err := service.GetConsultationByID(consultationID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao buscar consulta",
@@ -61,7 +60,7 @@ func CancelConsultationHandler(c *fiber.Ctx) error {
 	receiver := c.Query("receiver")
 	amount := c.QueryFloat("amount", 0)
 
-	if err := blockchain.CancelConsultation(*consultation, sender, receiver, amount); err != nil {
+	if err := service.CancelConsultation(*consultation, sender, receiver, amount); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Não foi possível cancelar a consulta",
 		})
@@ -82,7 +81,7 @@ func ConfirmConsultationHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	consultation, err := blockchain.GetConsultationByID(consultationID)
+	consultation, err := service.GetConsultationByID(consultationID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao buscar consulta",
@@ -98,7 +97,7 @@ func ConfirmConsultationHandler(c *fiber.Ctx) error {
 	receiver := c.Query("receiver")
 	amount := c.QueryFloat("amount", 0)
 
-	if err := blockchain.ConfirmConsultation(*consultation, sender, receiver, amount); err != nil {
+	if err := service.ConfirmConsultation(*consultation, sender, receiver, amount); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Não foi possível confirmar a consulta",
 		})
@@ -119,7 +118,7 @@ func UpdateConsultationHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	consultation, err := blockchain.GetConsultationByID(consultationID)
+	consultation, err := service.GetConsultationByID(consultationID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao buscar consulta",
@@ -142,7 +141,7 @@ func UpdateConsultationHandler(c *fiber.Ctx) error {
 	receiver := c.Query("receiver")
 	amount := c.QueryFloat("amount", 0)
 
-	if err := blockchain.UpdateConsultation(*consultation, sender, receiver, amount); err != nil {
+	if err := service.UpdateConsultation(*consultation, sender, receiver, amount); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Não foi possível atualizar a consulta",
 		})
@@ -164,7 +163,7 @@ func GetConsultationByAnimalIDHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	consultations, err := blockchain.GetConsultationByAnimalID(id)
+	consultations, err := service.GetConsultationByAnimalID(id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao buscar consultas",
@@ -185,7 +184,7 @@ func GetConsultationByVeterinaryIDHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	consultations, err := blockchain.GetConsultationByVeterinaryID(id)
+	consultations, err := service.GetConsultationByVeterinaryID(id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao buscar consultas",

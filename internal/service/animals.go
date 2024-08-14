@@ -1,4 +1,4 @@
-package blockchain
+package service
 
 import (
 	// "crypto/sha256"
@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"vetblock/internal/blockchain"
 	"vetblock/internal/db"
 )
 
@@ -20,7 +21,7 @@ func AddAnimalTransaction(animal db.Animal, sender, receiver string, amount floa
     }
 
     // Crie uma nova transação para o animal com o JSON
-    transaction := Transaction{
+    transaction := blockchain.Transaction{
         Sender:    sender,
         Receiver:  receiver,
         Amount:    amount,
@@ -29,17 +30,17 @@ func AddAnimalTransaction(animal db.Animal, sender, receiver string, amount floa
     }
 
     // Crie um novo bloco com a nova transação
-    newBlock := Block{
-        Index:        len(Blockchain) + 1,
+    newBlock := blockchain.Block{
+        Index:        len(blockchain.Blockchain) + 1,
         Timestamp:    time.Now(),
-        Transactions: []Transaction{transaction},
-        PreviousHash: Blockchain[len(Blockchain)-1].Hash,
+        Transactions: []blockchain.Transaction{transaction},
+        PreviousHash: blockchain.Blockchain[len(blockchain.Blockchain)-1].Hash,
     }
 
     // Minerar o bloco e adicioná-lo à blockchain
     difficulty := 2
     newBlock.MineBlock(difficulty)
-    Blockchain = append(Blockchain, newBlock)
+    blockchain.Blockchain = append(blockchain.Blockchain, newBlock)
     
     return nil
 }
@@ -50,7 +51,7 @@ func AddAnimalTransaction(animal db.Animal, sender, receiver string, amount floa
 // Função para buscar um animal por ID na blockchain
 func GetAnimalByID(id string) (*db.Animal, error) {
     // Itera sobre cada bloco na blockchain
-    for _, block := range Blockchain {
+    for _, block := range blockchain.Blockchain {
         // Itera sobre cada transação no bloco
         for _, tx := range block.Transactions {
             // Deserializa o campo Data para verificar se contém um animal

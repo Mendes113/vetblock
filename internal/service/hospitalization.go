@@ -1,10 +1,10 @@
-package blockchain
+package service
 
 import (
 	"encoding/json"
 	"errors"
 	"log"
-	"time"
+	"vetblock/internal/blockchain"
 	"vetblock/internal/db"
 )
 
@@ -54,25 +54,21 @@ func AddHospitalizationTransaction(hospitalization db.Hospitalization, sender, r
 		return err
 	}
 
-	transaction := Transaction{
-		Sender:    sender,
-		Receiver:  receiver,
-		Amount:    amount,
-		Timestamp: time.Unix(time.Now().Unix(), 0),
-		Data:      string(hospitalizationJSON),
-	}
+	transaction := blockchain.NewTransaction(sender, receiver, amount, string(hospitalizationJSON))
 
-	newBlock := Block{
-		Index:        len(Blockchain) + 1,
-		Timestamp:    time.Now(),
-		Transactions: []Transaction{transaction},
-		Hash:         "",
-		PreviousHash: Blockchain[len(Blockchain)-1].Hash,
-	}
+	// newBlock := Block{
+	// 	Index:        len(Blockchain) + 1,
+	// 	Timestamp:    time.Now(),
+	// 	Transactions: []Transaction{transaction},
+	// 	Hash:         "",
+	// 	PreviousHash: Blockchain[len(Blockchain)-1].Hash,
+	// }
+
+	newBlock := blockchain.NewBlock(len(blockchain.Blockchain)+1, []blockchain.Transaction{*transaction}, blockchain.Blockchain[len(blockchain.Blockchain)-1].Hash)
 
 	difficulty := 2
 	newBlock.MineBlock(difficulty)
-	Blockchain = append(Blockchain, newBlock)
+	blockchain.Blockchain = append(blockchain.Blockchain, *newBlock)
 	log.Printf("Bloco adicionado à blockchain: %v", newBlock)
 
 	return nil
@@ -80,7 +76,7 @@ func AddHospitalizationTransaction(hospitalization db.Hospitalization, sender, r
 
 func GetHospitalizationByID(id string) (*db.Hospitalization, error) {
 	log.Printf("Buscando hospitalização por ID: %v", id)
-	for _, block := range Blockchain {
+	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
 			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
@@ -99,7 +95,7 @@ func GetHospitalizationByID(id string) (*db.Hospitalization, error) {
 func GetHospitalizationsByPatientID(patientID string) ([]db.Hospitalization, error) {
 	log.Printf("Buscando hospitalizações por ID do paciente: %v", patientID)
 	var hospitalizations []db.Hospitalization
-	for _, block := range Blockchain {
+	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
 			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
@@ -118,7 +114,7 @@ func GetHospitalizationsByPatientID(patientID string) ([]db.Hospitalization, err
 func GetHospitalizationsByDoctorID(doctorID string) ([]db.Hospitalization, error) {
 	log.Printf("Buscando hospitalizações por ID do médico: %v", doctorID)
 	var hospitalizations []db.Hospitalization
-	for _, block := range Blockchain {
+	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
 			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
@@ -136,7 +132,7 @@ func GetHospitalizationsByDoctorID(doctorID string) ([]db.Hospitalization, error
 //talvez deva ir para medication.go
 func GetMedicationByHospitalizationID(id string) ([]string, error) {
 	log.Printf("Buscando medicamentos por ID da hospitalização: %v", id)
-	for _, block := range Blockchain {
+	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
 			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
@@ -156,7 +152,7 @@ func GetMedicationByHospitalizationID(id string) ([]string, error) {
 func GetHospitalizations() ([]db.Hospitalization, error) {
 	log.Printf("Buscando todas as hospitalizações")
 	var hospitalizations []db.Hospitalization
-	for _, block := range Blockchain {
+	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
 			var hospitalization db.Hospitalization
 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)

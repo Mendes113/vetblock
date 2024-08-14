@@ -29,3 +29,17 @@ func (b *Block) CalculateHash() string {
     hashed := h.Sum(nil)
     return hex.EncodeToString(hashed)
 }
+
+//criar um novo bloco
+func NewBlock(index int, transactions []Transaction, previousHash string) *Block {
+    block := &Block{
+        Index:        index,
+        Timestamp:    time.Now(),
+        Transactions: transactions,
+        PreviousHash: previousHash,
+        Hash:         "",
+        Nonce:        0,
+    }
+    block.Hash = block.CalculateHash()
+    return block
+}

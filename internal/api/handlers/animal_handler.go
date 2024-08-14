@@ -1,9 +1,8 @@
 package handlers
 
 import (
-	"vetblock/internal/blockchain"
 	"vetblock/internal/db"
-
+	"vetblock/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -19,7 +18,7 @@ func AddAnimalTransactionHandler(c *fiber.Ctx) error {
     receiver := "User" // Alterar conforme necessário
     amount := 0.0      // Alterar conforme necessário
 
-    err := blockchain.AddAnimalTransaction(animal, sender, receiver, amount)
+    err := service.AddAnimalTransaction(animal, sender, receiver, amount)
     if err != nil {
         return c.Status(fiber.StatusInternalServerError).SendString("Failed to add animal transaction")
     }
@@ -31,7 +30,7 @@ func AddAnimalTransactionHandler(c *fiber.Ctx) error {
 func GetAnimalByIDHandler(c *fiber.Ctx) error {
     id := c.Params("id") // Obtém o ID do animal da URL
     
-    animal, err := blockchain.GetAnimalByID(id)
+    animal, err := service.GetAnimalByID(id)
     if err != nil {
         return c.Status(fiber.StatusNotFound).SendString(err.Error())
     }
@@ -47,7 +46,7 @@ func UpdateAnimal(c *fiber.Ctx) error {
         return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
     }
 
-    if err := blockchain.UpdateAnimal(id, animal); err != nil {
+    if err := service.UpdateAnimal(id, animal); err != nil {
         return c.Status(fiber.StatusInternalServerError).SendString("Failed to update animal")
     }
 
@@ -58,7 +57,7 @@ func UpdateAnimal(c *fiber.Ctx) error {
 func DeleteAnimal(c *fiber.Ctx) error {
     id := c.Params("id")
 
-    if err := blockchain.DeleteAnimal(id); err != nil {
+    if err := service.DeleteAnimal(id); err != nil {
         return c.Status(fiber.StatusInternalServerError).SendString("Failed to delete animal")
     }
 

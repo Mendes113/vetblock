@@ -1,20 +1,21 @@
 package db
 
 import (
-	"context"
 	"fmt"
-	"log"
 
-	"github.com/jackc/pgx/v5/pgxpool"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var Pool *pgxpool.Pool
 
-func InitDB(connStr string) {
-    var err error
-    Pool, err = pgxpool.New(context.Background(), connStr)
+
+func NewDb() *gorm.DB {
+    dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", "localhost", 5432, "vetblock", "vetblock", "vet113password")
+    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+    
     if err != nil {
-        log.Fatalf("Unable to connect to database: %v", err)
+        panic("failed to connect database")
     }
-    fmt.Println("Database connection established")
+
+    return db
 }
