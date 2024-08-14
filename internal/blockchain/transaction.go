@@ -3,7 +3,7 @@ package blockchain
 import (
 	"strconv"
 	"time"
-	"vetblock/internal/db"
+	"vetblock/internal/db/model"
 )
 
 type Transaction struct {
@@ -15,7 +15,7 @@ type Transaction struct {
 }
 
 type AnimalTransaction struct {
-    Animal db.Animal `json:"animal"`
+    Animal model.Animal `json:"animal"`
     Timestamp time.Time `json:"timestamp"`
 }
 

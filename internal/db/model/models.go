@@ -1,4 +1,4 @@
-package db
+package model
 
 import (
 	"time"
@@ -6,12 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type User struct {
-    ID       int64  `json:"id"`
-    Username string `json:"username"`
-    Password string `json:"password"`
-    Email    string `json:"email"`
-}
 
 type Animal struct {
     ID          string    `json:"id"`
@@ -60,3 +54,5 @@ type Hospitalization struct {
 	DoctorID    string   `json:"doctor_id"`
 	Medications []string `json:"medications"`
 }
+
+

@@ -3,15 +3,16 @@ package handlers
 import (
 	"log"
 	"strconv"
-	"vetblock/internal/db"
+	"vetblock/internal/db/model"
 	"vetblock/internal/service"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
 // Handler para agendar uma consulta
 func ScheduleConsultationHandler(c *fiber.Ctx) error {
-	var consultation db.Consultation
+	var consultation model.Consultation
 	if err := c.BodyParser(&consultation); err != nil {
 		log.Printf("Erro ao analisar a solicitação: %v", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

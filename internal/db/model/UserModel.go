@@ -1,16 +1,15 @@
-package users
+package model
 
 import "errors"
 
-
 type User struct {
-	ID       int    `json:"id_user"`
+	ID       int64  `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
 
-func NewUser(id int, username, password, email string) *User {
+func NewUser(id int64, username, password, email string) *User {
 	return &User{
 		ID:       id,
 		Username: username,
@@ -19,7 +18,7 @@ func NewUser(id int, username, password, email string) *User {
 	}
 }
 
-func (u *User) GetID() int {
+func (u *User) GetID() int64 {
 	return u.ID
 }
 
@@ -35,7 +34,7 @@ func (u *User) GetEmail() string {
 	return u.Email
 }
 
-func (u *User) SetID(id int) {
+func (u *User) SetID(id int64) {
 	u.ID = id
 }
 
@@ -55,7 +54,7 @@ func (u *User) Update(username, password, email string) {
 	u.Username = username
 	u.Password = password
 	u.Email = email
-}	
+}
 
 func (u *User) Validate() error {
 	if u.Username == "" {
@@ -89,6 +88,4 @@ func (u *User) ValidateUsername(username string) error {
 		return errors.New("invalid username")
 	}
 	return nil
-}	
-
-
+}
