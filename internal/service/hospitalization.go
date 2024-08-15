@@ -31,7 +31,7 @@ func ValidateHospitalization(hospitalization model.Hospitalization) error {
 		{hospitalization.StartDate == time.Time{}, ErrInvalidStartDate},
 		{hospitalization.EndDate == time.Time{}, ErrInvalidEndDate},
 		{hospitalization.Reason == "", ErrInvalidReason},
-		{hospitalization.DoctorID == uuid.UUID{}, ErrInvalidDoctorID},
+		{hospitalization.CRVM == 0, ErrInvalidDoctorID},
 		{len(hospitalization.Medications) == 0, ErrInvalidMedications},
 	}
 
@@ -114,8 +114,8 @@ func GetHospitalizationsByPatientID(patientID uuid.UUID) ([]model.Hospitalizatio
 	return hospitalizations, nil
 }
 
-func GetHospitalizationsByDoctorID(doctorID uuid.UUID) ([]model.Hospitalization, error) {
-	log.Printf("Buscando hospitalizações por ID do médico: %v", doctorID)
+func GetHospitalizationsByDoctorID(CRVM int) ([]model.Hospitalization, error) {
+	log.Printf("Buscando hospitalizações por ID do médico: %v", CRVM)
 	var hospitalizations []model.Hospitalization
 	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
@@ -125,7 +125,7 @@ func GetHospitalizationsByDoctorID(doctorID uuid.UUID) ([]model.Hospitalization,
 				log.Printf("Erro ao decodificar hospitalização: %v", err)
 				continue
 			}
-			if hospitalization.DoctorID == doctorID {
+			if hospitalization.CRVM == CRVM {
 				hospitalizations = append(hospitalizations, hospitalization)
 			}
 		}

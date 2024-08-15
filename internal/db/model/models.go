@@ -9,7 +9,7 @@ import (
 )
 
 type Animal struct {
-	ID          uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key;" json:"animal_id"`
 	Name        string    `json:"name"`
 	Species     string    `json:"species"`
 	Breed       string    `json:"breed"`
@@ -79,7 +79,7 @@ type Hospitalization struct {
 	StartDate   time.Time `json:"start_date"`
 	EndDate     time.Time `json:"end_date"`
 	Reason      string    `json:"reason"`
-	DoctorID    uuid.UUID `gorm:"type:uuid;not null" json:"doctor_id"`
+	CRVM    	 int `gorm:"type:uuid;not null" json:"doctor_id"`
 	Medications []string  `gorm:"type:jsonb" json:"medications"` // Use JSONB for arrays
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
