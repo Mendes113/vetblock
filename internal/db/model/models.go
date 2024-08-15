@@ -19,6 +19,7 @@ type Animal struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
+	CPFTutor     uuid.UUID `gorm:"type:uuid;not null" json:"CPFtutor"`
 }
 
 
@@ -41,9 +42,9 @@ func (cd CustomDate) MarshalJSON() ([]byte, error) {
 
 
 type Consultation struct {
-    ID                      uuid.UUID      `gorm:"type:uuid;primary_key;" json:"id"`
+    ID                      uuid.UUID      `gorm:"type:uuid;primary_key;" json:"consultation_id"`
     AnimalID                uuid.UUID      `gorm:"type:uuid;not null" json:"animal_id"`
-    VeterinaryID            uuid.UUID      `gorm:"type:uuid;not null" json:"veterinary_id"`
+    CRVM           uuid.UUID      `gorm:"type:uuid;not null" json:"crvm"`
     ConsultationDate        CustomDate     `json:"consultation_date"`
     ConsultationHour        string         `json:"consultation_hour"`
     ConsultationType        string         `json:"consultation_type"`
@@ -57,7 +58,7 @@ type Consultation struct {
 }
 
 type ConsultationHistory struct {
-	ID            uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
+	ID            uuid.UUID `gorm:"type:uuid;primary_key;" json:"consultation_history_id"`
 	ConsultationID uuid.UUID `gorm:"type:uuid;not null" json:"consultation_id"`
 	Changes        []Change  `gorm:"type:jsonb" json:"changes"` // Use JSONB for arrays
 	Timestamp      time.Time `json:"timestamp"`
@@ -73,7 +74,7 @@ type Change struct {
 }
 
 type Hospitalization struct {
-	ID          uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key;" json:"hospitalization_id"`
 	PatientID   uuid.UUID `gorm:"type:uuid;not null" json:"patient_id"`
 	StartDate   time.Time `json:"start_date"`
 	EndDate     time.Time `json:"end_date"`

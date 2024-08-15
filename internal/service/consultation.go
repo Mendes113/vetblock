@@ -107,7 +107,7 @@ func GetConsultationByVeterinaryID(id uuid.UUID) ([]model.Consultation, error) {
 				log.Printf("Erro ao decodificar transação: %v", err)
 				return nil, err
 			}
-			if consultation.VeterinaryID == id {
+			if consultation.CRVM == id {
 				consultations = append(consultations, consultation)
 				log.Printf("Consulta encontrada: %v", consultation)
 			}
@@ -172,7 +172,7 @@ func ValidateConsultation(consultation model.Consultation) error {
 	if consultation.AnimalID == [16]byte{} {
 		return errors.New("AnimalID não pode ser zero")
 	}
-	if consultation.VeterinaryID == [16]byte{}{
+	if consultation.CRVM == [16]byte{}{
 		return errors.New("VeterinaryID não pode ser zero")
 	}
 	if consultation.ConsultationPrice < 0 {

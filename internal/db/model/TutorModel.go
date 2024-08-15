@@ -1,9 +1,12 @@
 package model
 
-import "strconv"
+import (
+	"errors"
+	"strconv"
+)
 
 type Tutor struct {
-    CPF      string `json:"cpf" gorm:"type:char(11);primary_key"` // Ajustado para 11 caracteres
+    CPFTutor      string `json:"cpf_tutor" gorm:"type:char(11);primary_key"` // Ajustado para 11 caracteres
     Name     string `json:"name"`
     Email    string `json:"email"`
     Phone    string `json:"phone"`
@@ -12,19 +15,23 @@ type Tutor struct {
 }
 
 
-func NewTutor(cpf, name, email, phone, address, password string) *Tutor {
+func NewTutor(cpf, name, email, phone, address, password string) (*Tutor, error) {
+
+	if !isValidCPF(cpf) {
+		return nil, errors.New("CPF inválido")
+	}
 	return &Tutor{
-		CPF: cpf,
+		CPFTutor: cpf,
 		Name: name,
 		Email: email,
 		Phone: phone,
 		Address: address,
 		Password: password,
-	}
+	},nil
 }
 
 func (t *Tutor) GetCPF() string {
-	return t.CPF
+	return t.CPFTutor
 }
 
 func (t *Tutor) GetName() string {
@@ -48,7 +55,7 @@ func (t *Tutor) GetPassword() string {
 }
 
 func (t *Tutor) SetCPF(cpf string) {
-	t.CPF = cpf
+	t.CPFTutor = cpf
 }
 
 func (t *Tutor) SetName(name string) {
@@ -124,9 +131,5 @@ func isValidCPF(cpf string) bool {
 
     // Calcula o segundo dígito verificador
     secondDigit := calculateDigit(cpf[:10], 11)
-    if secondDigit != int(cpf[10]-'0') {
-        return false
-    }
-
-    return true
+    return secondDigit == int(cpf[10]-'0')
 }
