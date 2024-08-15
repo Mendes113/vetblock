@@ -4,55 +4,64 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-
 type Animal struct {
-    ID          string    `json:"id"`
-    Name        string    `json:"name"`
-    Species     string    `json:"species"`
-    Breed       string    `json:"breed"`
-    Age         int       `json:"age"`
-    Description string    `json:"description"`
-    Timestamp   time.Time `json:"timestamp"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
+	Name        string    `json:"name"`
+	Species     string    `json:"species"`
+	Breed       string    `json:"breed"`
+	Age         int       `json:"age"`
+	Description string    `json:"description"`
+	Timestamp   time.Time `json:"timestamp"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
 
-
 type Consultation struct {
-	ID                      uuid.UUID `json:"id"`
-	AnimalID                uint64    `json:"animal_id"`
-	VeterinaryID            uint64    `json:"veterinary_id"`
-	ConsultationDate        string    `json:"consultation_date"`
+	ID                      uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
+	AnimalID                uuid.UUID `gorm:"type:uuid;not null" json:"animal_id"`
+	VeterinaryID            uuid.UUID `gorm:"type:uuid;not null" json:"veterinary_id"`
+	ConsultationDate        time.Time `json:"consultation_date"`
 	ConsultationHour        string    `json:"consultation_hour"`
 	ConsultationType        string    `json:"consultation_type"`
 	ConsultationDescription string    `json:"consultation_description"`
 	ConsultationPrescription string   `json:"consultation_prescription"`
 	ConsultationPrice       float64   `json:"consultation_price"`
 	ConsultationStatus      string    `json:"consultation_status"`
+	CreatedAt               time.Time `json:"created_at"`
+	UpdatedAt               time.Time `json:"updated_at"`
+	DeletedAt               gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
 
-
 type ConsultationHistory struct {
-    ConsultationID uuid.UUID `json:"consultation_id"`
-    Changes        []Change  `json:"changes"`
-    Timestamp      time.Time `json:"timestamp"`
+	ID            uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
+	ConsultationID uuid.UUID `gorm:"type:uuid;not null" json:"consultation_id"`
+	Changes        []Change  `gorm:"type:jsonb" json:"changes"` // Use JSONB for arrays
+	Timestamp      time.Time `json:"timestamp"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
 
 type Change struct {
-    Field    string `json:"field"`
-    OldValue string `json:"old_value"`
-    NewValue string `json:"new_value"`
+	Field    string `json:"field"`
+	OldValue string `json:"old_value"`
+	NewValue string `json:"new_value"`
 }
-
 
 type Hospitalization struct {
-	ID          string   `json:"id"`
-	PatientID   string   `json:"patient_id"`
-	StartDate   string   `json:"start_date"`
-	EndDate     string   `json:"end_date"`
-	Reason      string   `json:"reason"`
-	DoctorID    string   `json:"doctor_id"`
-	Medications []string `json:"medications"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
+	PatientID   uuid.UUID `gorm:"type:uuid;not null" json:"patient_id"`
+	StartDate   time.Time `json:"start_date"`
+	EndDate     time.Time `json:"end_date"`
+	Reason      string    `json:"reason"`
+	DoctorID    uuid.UUID `gorm:"type:uuid;not null" json:"doctor_id"`
+	Medications []string  `gorm:"type:jsonb" json:"medications"` // Use JSONB for arrays
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
-
 

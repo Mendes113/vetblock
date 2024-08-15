@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"log"
-	"strconv"
 	"vetblock/internal/db/model"
 	"vetblock/internal/service"
 
@@ -31,7 +30,6 @@ func ScheduleConsultationHandler(c *fiber.Ctx) error {
 			"error": "Não foi possível agendar a consulta",
 		})
 	}
-
 	return c.Status(fiber.StatusCreated).JSON(consultation)
 }
 
@@ -157,14 +155,15 @@ func UpdateConsultationHandler(c *fiber.Ctx) error {
 func GetConsultationByAnimalIDHandler(c *fiber.Ctx) error {
 	animalID := c.Params("animal_id")
 
-	id, err := strconv.ParseUint(animalID, 10, 64)
+	
+	consultationID, err := uuid.Parse(animalID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "ID de Animal inválido",
 		})
 	}
 
-	consultations, err := service.GetConsultationByAnimalID(id)
+	consultations, err := service.GetConsultationByAnimalID(consultationID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao buscar consultas",
@@ -178,12 +177,7 @@ func GetConsultationByAnimalIDHandler(c *fiber.Ctx) error {
 func GetConsultationByVeterinaryIDHandler(c *fiber.Ctx) error {
 	veterinaryID := c.Params("veterinary_id")
 
-	id, err := strconv.ParseUint(veterinaryID, 10, 64)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "ID de Veterinário inválido",
-		})
-	}
+	id, err := uuid.Parse(veterinaryID)
 
 	consultations, err := service.GetConsultationByVeterinaryID(id)
 	if err != nil {

@@ -8,8 +8,12 @@ import (
 	"fmt"
 	"time"
 	"vetblock/internal/blockchain"
+	"vetblock/internal/db"
 	"vetblock/internal/db/model"
+	"vetblock/internal/db/repository"
 )
+
+var repositoryAnimal *repository.AnimalRepository
 
 func AddAnimalTransaction(animal model.Animal, sender, receiver string, amount float64) error {
 	// Converta o objeto Animal para JSON
@@ -39,7 +43,7 @@ func AddAnimalTransaction(animal model.Animal, sender, receiver string, amount f
 	difficulty := 2
 	newBlock.MineBlock(difficulty)
 	blockchain.Blockchain = append(blockchain.Blockchain, newBlock)
-
+	db.NewDb().Save(&animal)
 	return nil
 }
 
@@ -57,7 +61,7 @@ func GetAnimalByID(id string) (*model.Animal, error) {
 			}
 
 			// Verifica se o ID do animal corresponde ao ID pesquisado
-			if animal.ID == id {
+			if animal.ID.String() == id {
 				return &animal, nil
 			}
 		}

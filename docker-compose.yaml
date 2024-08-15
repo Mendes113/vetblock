@@ -15,6 +15,25 @@ services:
     networks:
       - postgres_network
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    container_name: keycloak_container
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      DB_VENDOR: postgres
+      DB_ADDR: postgres_container
+      DB_DATABASE: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - postgres_network
+    command: start-dev
+
 volumes:
   postgres_data:
 

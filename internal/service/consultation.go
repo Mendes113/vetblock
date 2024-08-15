@@ -74,7 +74,7 @@ func GetConsultationByID(id uuid.UUID) (*model.Consultation, error) {
 }
 
 // Função para buscar uma consulta por ID do animal na blockchain
-func GetConsultationByAnimalID(id uint64) ([]model.Consultation, error) {
+func GetConsultationByAnimalID(id uuid.UUID) ([]model.Consultation, error) {
 	log.Printf("Buscando consultas por Animal ID: %v", id)
 	var consultations []model.Consultation
 	for _, block := range blockchain.Blockchain {
@@ -96,7 +96,7 @@ func GetConsultationByAnimalID(id uint64) ([]model.Consultation, error) {
 }
 
 // Função para buscar uma consulta por ID do veterinário na blockchain
-func GetConsultationByVeterinaryID(id uint64) ([]model.Consultation, error) {
+func GetConsultationByVeterinaryID(id uuid.UUID) ([]model.Consultation, error) {
 	log.Printf("Buscando consultas por Veterinary ID: %v", id)
 	var consultations []model.Consultation
 	for _, block := range blockchain.Blockchain {
@@ -169,10 +169,10 @@ func TrackChanges(oldConsultation, newConsultation model.Consultation) []model.C
 }
 
 func ValidateConsultation(consultation model.Consultation) error {
-	if consultation.AnimalID == 0 {
+	if consultation.AnimalID == [16]byte{} {
 		return errors.New("AnimalID não pode ser zero")
 	}
-	if consultation.VeterinaryID == 0 {
+	if consultation.VeterinaryID == [16]byte{}{
 		return errors.New("VeterinaryID não pode ser zero")
 	}
 	if consultation.ConsultationPrice < 0 {
