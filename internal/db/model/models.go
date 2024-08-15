@@ -44,7 +44,7 @@ func (cd CustomDate) MarshalJSON() ([]byte, error) {
 type Consultation struct {
     ID                      uuid.UUID      `gorm:"type:uuid;primary_key;" json:"consultation_id"`
     AnimalID                uuid.UUID      `gorm:"type:uuid;not null" json:"animal_id"`
-    CRVM           uuid.UUID      `gorm:"type:uuid;not null" json:"crvm"`
+    CRVM           			int      `gorm:"type:uuid;not null" json:"crvm"`
     ConsultationDate        CustomDate     `json:"consultation_date"`
     ConsultationHour        string         `json:"consultation_hour"`
     ConsultationType        string         `json:"consultation_type"`

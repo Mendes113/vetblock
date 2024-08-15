@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"log"
+	"strconv"
 	"vetblock/internal/db/model"
 	"vetblock/internal/service"
 
@@ -177,11 +178,15 @@ func GetConsultationByAnimalIDHandler(c *fiber.Ctx) error {
 
 // Handler para buscar consultas por ID do veterinário
 func GetConsultationByVeterinaryIDHandler(c *fiber.Ctx) error {
-	veterinaryID := c.Params("veterinary_id")
-
-	id, err := uuid.Parse(veterinaryID)
-
-	consultations, err := service.GetConsultationByVeterinaryID(id)
+	crvm := c.Params("crvm")
+	crvmInt, err := strconv.Atoi(crvm)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "CRVM inválido",
+		})
+	}
+	
+	consultations, err := service.GetConsultationByVeterinaryCRVM(crvmInt)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Erro ao buscar consultas",

@@ -96,8 +96,8 @@ func GetConsultationByAnimalID(id uuid.UUID) ([]model.Consultation, error) {
 }
 
 // Função para buscar uma consulta por ID do veterinário na blockchain
-func GetConsultationByVeterinaryID(id uuid.UUID) ([]model.Consultation, error) {
-	log.Printf("Buscando consultas por Veterinary ID: %v", id)
+func GetConsultationByVeterinaryCRVM(crvm int) ([]model.Consultation, error) {
+	log.Printf("Buscando consultas por Veterinary ID: %v", crvm)
 	var consultations []model.Consultation
 	for _, block := range blockchain.Blockchain {
 		for _, transaction := range block.Transactions {
@@ -107,13 +107,13 @@ func GetConsultationByVeterinaryID(id uuid.UUID) ([]model.Consultation, error) {
 				log.Printf("Erro ao decodificar transação: %v", err)
 				return nil, err
 			}
-			if consultation.CRVM == id {
+			if consultation.CRVM == crvm{
 				consultations = append(consultations, consultation)
 				log.Printf("Consulta encontrada: %v", consultation)
 			}
 		}
 	}
-	log.Printf("Total de consultas encontradas para Veterinary ID %v: %d", id, len(consultations))
+	log.Printf("Total de consultas encontradas para Veterinary ID %v: %d", crvm, len(consultations))
 	return consultations, nil
 }
 
@@ -172,7 +172,7 @@ func ValidateConsultation(consultation model.Consultation) error {
 	if consultation.AnimalID == [16]byte{} {
 		return errors.New("AnimalID não pode ser zero")
 	}
-	if consultation.CRVM == [16]byte{}{
+	if consultation.CRVM == 0 {
 		return errors.New("VeterinaryID não pode ser zero")
 	}
 	if consultation.ConsultationPrice < 0 {
