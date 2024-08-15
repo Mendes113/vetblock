@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,20 +21,39 @@ type Animal struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
 
+
+type CustomDate time.Time
+
+func (cd *CustomDate) UnmarshalJSON(data []byte) error {
+    str := strings.Trim(string(data), `"`)
+    t, err := time.Parse("2006-01-02", str)
+    if err != nil {
+        return err
+    }
+    *cd = CustomDate(t)
+    return nil
+}
+
+func (cd CustomDate) MarshalJSON() ([]byte, error) {
+    return []byte(`"` + time.Time(cd).Format("2006-01-02") + `"`), nil
+}
+
+
+
 type Consultation struct {
-	ID                      uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
-	AnimalID                uuid.UUID `gorm:"type:uuid;not null" json:"animal_id"`
-	VeterinaryID            uuid.UUID `gorm:"type:uuid;not null" json:"veterinary_id"`
-	ConsultationDate        time.Time `json:"consultation_date"`
-	ConsultationHour        string    `json:"consultation_hour"`
-	ConsultationType        string    `json:"consultation_type"`
-	ConsultationDescription string    `json:"consultation_description"`
-	ConsultationPrescription string   `json:"consultation_prescription"`
-	ConsultationPrice       float64   `json:"consultation_price"`
-	ConsultationStatus      string    `json:"consultation_status"`
-	CreatedAt               time.Time `json:"created_at"`
-	UpdatedAt               time.Time `json:"updated_at"`
-	DeletedAt               gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
+    ID                      uuid.UUID      `gorm:"type:uuid;primary_key;" json:"id"`
+    AnimalID                uuid.UUID      `gorm:"type:uuid;not null" json:"animal_id"`
+    VeterinaryID            uuid.UUID      `gorm:"type:uuid;not null" json:"veterinary_id"`
+    ConsultationDate        CustomDate     `json:"consultation_date"`
+    ConsultationHour        string         `json:"consultation_hour"`
+    ConsultationType        string         `json:"consultation_type"`
+    ConsultationDescription string         `json:"consultation_description"`
+    ConsultationPrescription string        `json:"consultation_prescription"`
+    ConsultationPrice       float64        `json:"consultation_price"`
+    ConsultationStatus      string         `json:"consultation_status"`
+    CreatedAt               time.Time      `json:"created_at"`
+    UpdatedAt               time.Time      `json:"updated_at"`
+    DeletedAt               gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
 
 type ConsultationHistory struct {
@@ -64,4 +84,5 @@ type Hospitalization struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
+
 

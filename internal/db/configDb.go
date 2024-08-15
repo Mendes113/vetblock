@@ -18,7 +18,7 @@ func NewDb() *gorm.DB {
         panic("failed to connect database")
     }
 
-    db.AutoMigrate(&model.User{}, model.Animal{}, model.Hospitalization{})
+    db.AutoMigrate(&model.User{}, model.Animal{}, model.Hospitalization{}, model.Consultation{}, model.ConsultationHistory{})
 
     return db
 }

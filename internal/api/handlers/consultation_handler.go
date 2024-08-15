@@ -12,8 +12,10 @@ import (
 // Handler para agendar uma consulta
 func ScheduleConsultationHandler(c *fiber.Ctx) error {
 	var consultation model.Consultation
+
 	if err := c.BodyParser(&consultation); err != nil {
 		log.Printf("Erro ao analisar a solicitação: %v", err)
+		log.Print(&consultation)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Solicitação inválida",
 		})
