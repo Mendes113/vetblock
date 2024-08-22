@@ -4,10 +4,7 @@ import (
 	"log"
 	"vetblock/internal/api"
 	"vetblock/internal/blockchain"
-	"vetblock/internal/db"
-	"vetblock/internal/db/repository"
 	"vetblock/internal/network"
-	"vetblock/internal/service"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,12 +13,9 @@ import (
 
 func main() {
 	
-    database := db.NewDb()
-	// Inicializar o repositório
-	animalRepo := &repository.AnimalRepository{Db: database}
+	
 
-	// Inicializar o serviço
-	srv := service.NewService(animalRepo)
+	
 
 	// Inicializar o Fiber e as rotas
 	app := fiber.New()
@@ -31,7 +25,7 @@ func main() {
 	network.StartServer()
 
 	// Configurar as rotas, passando o serviço
-	api.SetupRoutes(app, srv)
+	api.SetupRoutes(app)
 
 	// Rota de teste
 	app.Get("/", func(c *fiber.Ctx) error {

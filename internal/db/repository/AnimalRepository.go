@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"log"
+	"vetblock/internal/db"
 	"vetblock/internal/db/model"
 
 	"github.com/google/uuid"
@@ -13,6 +14,10 @@ type AnimalRepository struct {
 	Db *gorm.DB
 }
 
+func NewAnimalRepository() *AnimalRepository {
+	database := db.NewDb()
+	return &AnimalRepository{Db: database}
+}
 
 // Salva um animal no banco de dados e retorna um erro se ocorrer
 func (r *AnimalRepository) SaveAnimal(animal *model.Animal) error {
@@ -25,7 +30,6 @@ func (r *AnimalRepository) SaveAnimal(animal *model.Animal) error {
 	return nil
 }
 
-
 func (r *AnimalRepository) FindAnimalByID(id uuid.UUID) (*model.Animal, error) {
 	var animal model.Animal
 	if err := r.Db.Where("id = ? AND deleted_at IS NULL", id).First(&animal).Error; err != nil {
@@ -35,7 +39,7 @@ func (r *AnimalRepository) FindAnimalByID(id uuid.UUID) (*model.Animal, error) {
 	return &animal, nil
 }
 
-//delete animal
+// delete animal
 func (r *AnimalRepository) DeleteAnimal(id uuid.UUID) error {
 	var animal model.Animal
 	if err := r.Db.Where("id = ?", id).First(&animal).Error; err != nil {
@@ -56,4 +60,3 @@ func (r *AnimalRepository) DeleteAnimal(id uuid.UUID) error {
 	log.Print("Animal soft deleted successfully")
 	return nil
 }
-

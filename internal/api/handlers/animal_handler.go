@@ -19,7 +19,9 @@ type AnimalResponse struct {
 	CPFTutor    string          `gorm:"type:char(11);not null" json:"cpf_tutor" validate:"required,len=11"`
 }
 
-func AddAnimalTransactionHandler(srv *service.Service) fiber.Handler {
+
+
+func AddAnimalTransactionHandler() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var animal AnimalResponse
 		animal.ID = uuid.New()
@@ -43,7 +45,7 @@ func AddAnimalTransactionHandler(srv *service.Service) fiber.Handler {
 		receiver := "User"
 		amount := 0.0
 
-		err := srv.AddAnimalTransaction(animalModel, sender, receiver, amount)
+		err := service.AddAnimalTransaction(animalModel, sender, receiver, amount)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to add animal transaction")
 		}
@@ -52,14 +54,14 @@ func AddAnimalTransactionHandler(srv *service.Service) fiber.Handler {
 	}
 }
 
-func GetAnimalByIDHandler(srv *service.Service) fiber.Handler {
+func GetAnimalByIDHandler() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := uuid.Parse(c.Params("id"))
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
 		}
 
-		animal, err := srv.GetAnimalByID(id)
+		animal, err := service.GetAnimalByID(id)
 		if err != nil {
 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
 		}
@@ -68,7 +70,7 @@ func GetAnimalByIDHandler(srv *service.Service) fiber.Handler {
 	}
 }
 
-func UpdateAnimalHandler(srv *service.Service) fiber.Handler {
+func UpdateAnimalHandler() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := uuid.Parse(c.Params("id"))
 		if err != nil {
@@ -80,7 +82,7 @@ func UpdateAnimalHandler(srv *service.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
 		}
 		
-		if err := srv.UpdateAnimal(id, animal); err != nil {
+		if err := service.UpdateAnimal(id, animal); err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to update animal")
 		}
 
@@ -88,7 +90,7 @@ func UpdateAnimalHandler(srv *service.Service) fiber.Handler {
 	}
 }
 
-func DeleteAnimalHandler(srv *service.Service) fiber.Handler {
+func DeleteAnimalHandler() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		log.Println("Deleting animal")
 
@@ -97,7 +99,7 @@ func DeleteAnimalHandler(srv *service.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
 		}
 
-		if err := srv.DeleteAnimal(id); err != nil {
+		if err := service.DeleteAnimal(id); err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to delete animal")
 		}
 

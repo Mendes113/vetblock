@@ -2,21 +2,20 @@ package api
 
 import (
 	"vetblock/internal/api/handlers"
-	"vetblock/internal/service"
 	// "vetblock/internal/api/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRoutes(app *fiber.App, srv *service.Service) {
+func SetupRoutes(app *fiber.App) {
 	protected := app.Group("/api/v1")
 
 	protected.Get("/blocks", handlers.GetBlockchain)
 	protected.Post("/blocks", handlers.AddBlock)
 	protected.Get("/blocks/:index/transactions", handlers.GetTransactions)
-	protected.Post("/animals", handlers.AddAnimalTransactionHandler(srv))
-	protected.Get("/animals/:id", handlers.GetAnimalByIDHandler(srv))
-	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler(srv))
+	protected.Post("/animals", handlers.AddAnimalTransactionHandler())
+	protected.Get("/animals/:id", handlers.GetAnimalByIDHandler())
+	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler())
 
 	protected.Post("/consultation/schedule", handlers.ScheduleConsultationHandler)
 	protected.Post("/consultation/:id/cancel", handlers.CancelConsultationHandler)

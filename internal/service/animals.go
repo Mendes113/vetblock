@@ -15,15 +15,10 @@ import (
 	"github.com/google/uuid"
 )
 
-type Service struct {
-	Repo *repository.AnimalRepository
-}
 
-// Função para criar um novo serviço
-func NewService(repo *repository.AnimalRepository) *Service {
-	return &Service{Repo: repo}
-}
-func (s *Service) AddAnimalTransaction(animal model.Animal, sender, receiver string, amount float64) error {
+
+
+func  AddAnimalTransaction(animal model.Animal, sender, receiver string, amount float64) error {
 	log.Println("adding animal transaction")
 
 	// Converte o animal para JSON
@@ -54,16 +49,16 @@ func (s *Service) AddAnimalTransaction(animal model.Animal, sender, receiver str
 	newBlock.MineBlock(difficulty)
 	blockchain.Blockchain = append(blockchain.Blockchain, newBlock)
 
-	// Salva o animal no repositório
-	if err := s.Repo.SaveAnimal(&animal); err != nil {
-		return err // Retorna o erro se falhar ao salvar o animal
+	repo := repository.NewAnimalRepository()
+	if err := repo.SaveAnimal(&animal); err != nil {
+		return err
 	}
 
 	return nil
 }
 
 // Função para buscar um animal por ID na blockchain
-func (s *Service) GetAnimalByID(id uuid.UUID) (*model.Animal, error) {
+func  GetAnimalByID(id uuid.UUID) (*model.Animal, error) {
 	// Itera sobre cada bloco na blockchain
 	for _, block := range blockchain.Blockchain {
 		// Itera sobre cada transação no bloco
@@ -86,7 +81,7 @@ func (s *Service) GetAnimalByID(id uuid.UUID) (*model.Animal, error) {
 }
 
 // Atualiza um animal na blockchain
-func (s *Service) UpdateAnimal(id uuid.UUID, updatedAnimal model.Animal) error {
+func  UpdateAnimal(id uuid.UUID, updatedAnimal model.Animal) error {
 	// Adicione a lógica para atualizar um animal existente
 	// Isso pode envolver encontrar o bloco ou transação correspondente e atualizar as informações
 	fmt.Printf("Atualizando animal %s com %v\n", id, updatedAnimal)
@@ -95,11 +90,10 @@ func (s *Service) UpdateAnimal(id uuid.UUID, updatedAnimal model.Animal) error {
 }
 
 // Exclui um animal da blockchain
-func (s *Service) DeleteAnimal(id uuid.UUID) error {
-	// Adicione a lógica para remover um animal da blockchain
-	// Isso pode envolver encontrar o bloco ou transação correspondente e removê-lo
+func  DeleteAnimal(id uuid.UUID) error {
+	repo := repository.NewAnimalRepository()
 	fmt.Printf("Excluindo animal %s\n", id)
-	if err := s.Repo.DeleteAnimal(id); err != nil {
+	if err := repo.DeleteAnimal(id); err != nil {
 		return err
 	}
 	
