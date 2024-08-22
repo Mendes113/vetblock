@@ -11,7 +11,6 @@ import (
 	"vetblock/internal/blockchain"
 	"vetblock/internal/db/model"
 	"vetblock/internal/db/repository"
-
 	"github.com/google/uuid"
 )
 
@@ -90,14 +89,14 @@ func  UpdateAnimal(id uuid.UUID, updatedAnimal model.Animal) error {
 }
 
 // Exclui um animal da blockchain
-func  DeleteAnimal(id uuid.UUID) error {
+func  DeleteAnimal(id uuid.UUID) (string, error) {
 	repo := repository.NewAnimalRepository()
 	fmt.Printf("Excluindo animal %s\n", id)
-	if err := repo.DeleteAnimal(id); err != nil {
-		return err
+	if msg, err := repo.DeleteAnimal(id); err != nil {
+		return msg, err
 	}
 	
-	return nil
+	return "Animal excluído com sucesso" , nil
 }
 
 // // Calcula o hash de uma string

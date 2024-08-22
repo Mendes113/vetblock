@@ -40,23 +40,23 @@ func (r *AnimalRepository) FindAnimalByID(id uuid.UUID) (*model.Animal, error) {
 }
 
 // delete animal
-func (r *AnimalRepository) DeleteAnimal(id uuid.UUID) error {
+func (r *AnimalRepository) DeleteAnimal(id uuid.UUID) (string,error) {
 	var animal model.Animal
 	if err := r.Db.Where("id = ?", id).First(&animal).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			log.Print("Animal not found:", err)
-			return nil
+			return "Animal not found", err
 		}
 		log.Print("Error finding animal:", err)
-		return err
+		return "Error finding animal", err
 	}
 
 	// Soft delete
 	if err := r.Db.Delete(&animal).Error; err != nil {
 		log.Print("Error deleting animal:", err)
-		return err
+		return "Error deleting animal", err
 	}
 
-	log.Print("Animal soft deleted successfully")
-	return nil
+	log.Print("Animal excluído com sucesso")
+	return "Animal deleted successfully", nil
 }

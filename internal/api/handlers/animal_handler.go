@@ -99,10 +99,17 @@ func DeleteAnimalHandler() fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
 		}
 
-		if err := service.DeleteAnimal(id); err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString("Failed to delete animal")
+		msg, err := service.DeleteAnimal(id)
+		
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": err.Error(),
+			})			
 		}
+		
 
-		return c.Status(fiber.StatusNoContent).SendString("Animal deleted")
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"message": msg,
+		})
 	}
 }
