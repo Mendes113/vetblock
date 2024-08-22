@@ -55,7 +55,7 @@ func sendBlockchain(conn *Connection) error {
 }
 
 func handleMessages(conn *Connection) {
-	defer conn.Conn.Close() // Fecha a conexão quando a função termina
+	defer conn.Conn.Close()
 
 	for {
 		_, msg, err := conn.Conn.ReadMessage()
@@ -64,20 +64,21 @@ func handleMessages(conn *Connection) {
 			break
 		}
 
-		// Processa a mensagem recebida
-		log.Printf("Recebida mensagem: %s", msg)
-
-		// Exemplo de processamento de um bloco recebido
 		var block blockchain.Block
 		if err := json.Unmarshal(msg, &block); err != nil {
 			log.Println("Erro ao decodificar mensagem como bloco:", err)
 			continue
 		}
 
-		// Adicione o bloco à blockchain, valide-o, etc.
-		// blockchain.AddBlock(block)
+		// Valide o bloco antes de adicioná-lo
+		if blockchain.ValidateBlock(block) {
+			blockchain.AddBlock(block)
+		} else {
+			log.Println("Bloco inválido recebido:", block)
+		}
 	}
 }
+
 
 func StartServer() {
 	http.HandleFunc("/ws", handleConnection)
@@ -90,14 +91,17 @@ func StartServer() {
 func propagateBlock(block blockchain.Block) {
 	nodes := []string{"http://localhost:8081"} // Adicione a lista de nós
 	for _, node := range nodes {
-		resp, err := http.Post(node+"/blocks", "application/json", bytes.NewBuffer(blockToJSON(block)))
-		if err != nil {
-			log.Printf("Erro ao enviar bloco para %s: %v", node, err)
-			continue
-		}
-		resp.Body.Close()
+		go func(node string) {
+			resp, err := http.Post(node+"/blocks", "application/json", bytes.NewBuffer(blockToJSON(block)))
+			if err != nil {
+				log.Printf("Erro ao enviar bloco para %s: %v", node, err)
+				return
+			}
+			resp.Body.Close()
+		}(node)
 	}
 }
+
 
 func blockToJSON(block blockchain.Block) []byte {
 	jsonData, _ := json.Marshal(block)

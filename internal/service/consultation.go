@@ -27,7 +27,7 @@ func AddConsultationTransaction(consultation model.Consultation, sender, receive
 	}
 
 	// Crie uma nova transação para a consulta com o JSON
-	transaction := blockchain.NewTransaction(sender, receiver, amount, string(consultationJSON))
+	transaction := blockchain.NewTransaction(sender, receiver,  string(consultationJSON))
 
 	log.Printf("Adicionando transação: %v", transaction)
 

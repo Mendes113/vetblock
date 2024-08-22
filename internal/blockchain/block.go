@@ -43,3 +43,62 @@ func NewBlock(index int, transactions []Transaction, previousHash string) *Block
     block.Hash = block.CalculateHash()
     return block
 }
+
+
+func ValidateBlock(block Block) bool {
+    // Verificar o hash do bloco
+    if block.Hash != block.CalculateHash() {
+        return false
+    }
+
+    // Verificar o hash do bloco anterior
+    if len(Blockchain) > 0 {
+        lastBlock := Blockchain[len(Blockchain)-1]
+        if block.PreviousHash != lastBlock.Hash {
+            return false
+        }
+    }
+
+    // Verificar a prova de trabalho
+    difficulty := 4 // Ajuste a dificuldade conforme necessário
+    if !isHashValid(block.Hash, difficulty) {
+        return false
+    }
+
+    // Validar transações
+    if !validateTransactions(block.Transactions) {
+        return false
+    }
+
+    // Verificar o timestamp
+    if block.Timestamp.After(time.Now()) {
+        return false
+    }
+
+    // Verificar índice sequencial
+    if len(Blockchain) > 0 {
+        lastBlock := Blockchain[len(Blockchain)-1]
+        if block.Index != lastBlock.Index+1 {
+            return false
+        }
+    }
+
+    return true
+}
+
+// Função para validar transações
+func validateTransactions(transactions []Transaction) bool {
+    
+    for _, transaction := range transactions {
+        if !transaction.Validate() {
+            return false
+        }
+
+        
+        
+    }
+
+
+
+    return true
+}

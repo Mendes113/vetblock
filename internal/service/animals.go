@@ -30,7 +30,6 @@ func  AddAnimalTransaction(animal model.Animal, sender, receiver string, amount 
 	transaction := blockchain.Transaction{
 		Sender:    sender,
 		Receiver:  receiver,
-		Amount:    amount,
 		Timestamp: time.Now(),
 		Data:      string(animalJSON), // Armazena o JSON como uma string
 	}

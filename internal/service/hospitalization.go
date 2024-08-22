@@ -57,7 +57,7 @@ func AddHospitalizationTransaction(hospitalization model.Hospitalization, sender
 		return err
 	}
 
-	transaction := blockchain.NewTransaction(sender, receiver, amount, string(hospitalizationJSON))
+	transaction := blockchain.NewTransaction(sender, receiver,  string(hospitalizationJSON))
 
 	// newBlock := Block{
 	// 	Index:        len(Blockchain) + 1,
