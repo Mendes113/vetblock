@@ -9,17 +9,17 @@ import (
 )
 
 type Animal struct {
-	ID          uuid.UUID `gorm:"type:uuid;primary_key;" json:"animal_id"`
-	Name        string    `json:"name"`
-	Species     string    `json:"species"`
-	Breed       string    `json:"breed"`
-	Age         int       `json:"age"`
-	Description string    `json:"description"`
-	Timestamp   time.Time `json:"timestamp"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
-	CPFTutor     uuid.UUID `gorm:"type:uuid;not null" json:"CPFtutor"`
+	ID          uuid.UUID       `gorm:"type:uuid;primary_key;" json:"animal_id"`
+	Name        string          `json:"name" gorm:"not null" validate:"required,min=2,max=100"`
+	Species     string          `json:"species" gorm:"not null" validate:"required"`
+	Breed       string          `json:"breed" gorm:"not null" validate:"required"`
+	Age         int             `json:"age" validate:"gte=0"`
+	Description string          `json:"description"`
+	Timestamp   time.Time       `json:"timestamp" gorm:"autoCreateTime"`
+	CreatedAt   time.Time       `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time       `json:"updated_at" gorm:"autoUpdateTime"`
+	DeletedAt   gorm.DeletedAt  `gorm:"index" json:"-"` // Soft delete
+	CPFTutor    uuid.UUID       `gorm:"type:uuid;not null" json:"CPFtutor" validate:"required,uuid"`
 }
 
 
@@ -43,19 +43,20 @@ func (cd CustomDate) MarshalJSON() ([]byte, error) {
 
 type Consultation struct {
     ID                      uuid.UUID      `gorm:"type:uuid;primary_key;" json:"consultation_id"`
-    AnimalID                uuid.UUID      `gorm:"type:uuid;not null" json:"animal_id"`
-    CRVM           			int      `gorm:"type:uuid;not null" json:"crvm"`
-    ConsultationDate        CustomDate     `json:"consultation_date"`
-    ConsultationHour        string         `json:"consultation_hour"`
-    ConsultationType        string         `json:"consultation_type"`
-    ConsultationDescription string         `json:"consultation_description"`
+    AnimalID                uuid.UUID      `gorm:"type:uuid;not null" json:"animal_id" validate:"required,uuid"`
+    CRVM                    int            `json:"crvm" validate:"required,min=1"`
+    ConsultationDate        CustomDate     `json:"consultation_date" validate:"required"`
+    ConsultationHour        string         `json:"consultation_hour" validate:"required,len=5,datetime=15:04"` // Validação para formato "HH:MM"
+    ConsultationType        string         `json:"consultation_type" validate:"required"`
+    ConsultationDescription string         `json:"consultation_description" validate:"required"`
     ConsultationPrescription string        `json:"consultation_prescription"`
-    ConsultationPrice       float64        `json:"consultation_price"`
-    ConsultationStatus      string         `json:"consultation_status"`
-    CreatedAt               time.Time      `json:"created_at"`
-    UpdatedAt               time.Time      `json:"updated_at"`
+    ConsultationPrice       float64        `json:"consultation_price" validate:"required,gte=0"`
+    ConsultationStatus      string         `json:"consultation_status" validate:"required,oneof='scheduled' 'completed' 'canceled'"`
+    CreatedAt               time.Time      `json:"created_at" gorm:"autoCreateTime"`
+    UpdatedAt               time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
     DeletedAt               gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
+
 
 type ConsultationHistory struct {
 	ID            uuid.UUID `gorm:"type:uuid;primary_key;" json:"consultation_history_id"`
@@ -74,16 +75,15 @@ type Change struct {
 }
 
 type Hospitalization struct {
-	ID          uuid.UUID `gorm:"type:uuid;primary_key;" json:"hospitalization_id"`
-	PatientID   uuid.UUID `gorm:"type:uuid;not null" json:"patient_id"`
-	StartDate   time.Time `json:"start_date"`
-	EndDate     time.Time `json:"end_date"`
-	Reason      string    `json:"reason"`
-	CRVM    	 int `gorm:"type:uuid;not null" json:"doctor_id"`
-	Medications []string  `gorm:"type:jsonb" json:"medications"` // Use JSONB for arrays
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          uuid.UUID      `gorm:"type:uuid;primary_key;" json:"hospitalization_id"`
+	PatientID   uuid.UUID      `gorm:"type:uuid;not null" json:"patient_id" validate:"required,uuid"`
+	StartDate   time.Time      `json:"start_date" validate:"required"`
+	EndDate     time.Time      `json:"end_date" validate:"required,gtfield=StartDate"` // Valida que EndDate é depois de StartDate
+	Reason      string         `json:"reason" validate:"required,min=10,max=255"`
+	CRVM        int            `json:"doctor_id" validate:"required,min=1"`
+	Medications []string       `gorm:"type:jsonb" json:"medications" validate:"dive,required,min=1"` // Valida que cada medicação está presente
+	CreatedAt   time.Time      `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
-
 

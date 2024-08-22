@@ -6,12 +6,12 @@ import (
 )
 
 type Tutor struct {
-    CPFTutor      string `json:"cpf_tutor" gorm:"type:char(11);primary_key"` // Ajustado para 11 caracteres
-    Name     string `json:"name"`
-    Email    string `json:"email"`
-    Phone    string `json:"phone"`
-    Address  string `json:"address"`
-    Password string `json:"-"` 
+    CPFTutor string `json:"cpf_tutor" gorm:"type:char(11);primary_key" validate:"required,len=11,cpf"`
+    Name     string `json:"name" validate:"required,min=2,max=100"`
+    Email    string `json:"email" validate:"required,email"`
+    Phone    string `json:"phone" validate:"required,min=10,max=15"`
+    Address  string `json:"address" validate:"required,min=5,max=255"`
+    Password string `json:"-" validate:"required,min=8"`
 }
 
 
