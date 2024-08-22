@@ -1,65 +1,106 @@
 package handlers
 
 import (
+	"log"
 	"vetblock/internal/db/model"
 	"vetblock/internal/service"
-
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 
-func AddAnimalTransactionHandler(c *fiber.Ctx) error {
-	var animal model.Animal
-	if err := c.BodyParser(&animal); err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
-	}
-
-	// Exemplo de dados do remetente e destinatário
-	sender := "System" // Alterar conforme necessário
-	receiver := "User" // Alterar conforme necessário
-	amount := 0.0      // Alterar conforme necessário
-
-	err := service.AddAnimalTransaction(animal, sender, receiver, amount)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Failed to add animal transaction")
-	}
-
-	return c.Status(fiber.StatusCreated).JSON(animal)
+type AnimalResponse struct {
+	ID          uuid.UUID       `json:"id"`
+	Name        string          `json:"name" gorm:"not null" validate:"required,min=2,max=100"`
+	Species     string          `json:"species" gorm:"not null" validate:"required"`
+	Breed       string          `json:"breed" gorm:"not null" validate:"required"`
+	Age         int             `json:"age" validate:"gte=0"`
+	Description string          `json:"description"`
+	CPFTutor    string          `gorm:"type:char(11);not null" json:"cpf_tutor" validate:"required,len=11"`
 }
 
-func GetAnimalByIDHandler(c *fiber.Ctx) error {
-	id := c.Params("id") // Obtém o ID do animal da URL
+func AddAnimalTransactionHandler(srv *service.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var animal AnimalResponse
+		animal.ID = uuid.New()
+		if err := c.BodyParser(&animal); err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
+		}
 
-	animal, err := service.GetAnimalByID(id)
-	if err != nil {
-		return c.Status(fiber.StatusNotFound).SendString(err.Error())
+		
+		// Convert the AnimalResponse to Animal
+		animalModel := model.Animal{
+			ID:          animal.ID,
+			Name:        animal.Name,
+			Species:     animal.Species,
+			Breed:       animal.Breed,
+			Age:         animal.Age,
+			Description: animal.Description,
+			CPFTutor:    animal.CPFTutor,
+		}
+
+		sender := "System"
+		receiver := "User"
+		amount := 0.0
+
+		err := srv.AddAnimalTransaction(animalModel, sender, receiver, amount)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to add animal transaction")
+		}
+
+		return c.Status(fiber.StatusCreated).JSON(animal)
 	}
-
-	return c.JSON(animal)
 }
 
-// Atualiza as informações de um animal
-func UpdateAnimal(c *fiber.Ctx) error {
-	id := c.Params("id")
-	var animal model.Animal
-	if err := c.BodyParser(&animal); err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
-	}
+func GetAnimalByIDHandler(srv *service.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id, err := uuid.Parse(c.Params("id"))
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
 
-	if err := service.UpdateAnimal(id, animal); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Failed to update animal")
-	}
+		animal, err := srv.GetAnimalByID(id)
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).SendString(err.Error())
+		}
 
-	return c.Status(fiber.StatusOK).JSON(animal)
+		return c.JSON(animal)
+	}
 }
 
-// Exclui um animal
-func DeleteAnimal(c *fiber.Ctx) error {
-	id := c.Params("id")
+func UpdateAnimalHandler(srv *service.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id, err := uuid.Parse(c.Params("id"))
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
 
-	if err := service.DeleteAnimal(id); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Failed to delete animal")
+		var animal model.Animal
+		if err := c.BodyParser(&animal); err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
+		}
+		
+		if err := srv.UpdateAnimal(id, animal); err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to update animal")
+		}
+
+		return c.Status(fiber.StatusOK).JSON(animal)
 	}
+}
 
-	return c.Status(fiber.StatusNoContent).SendString("Animal deleted")
+func DeleteAnimalHandler(srv *service.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		log.Println("Deleting animal")
+
+		id, err := uuid.Parse(c.Params("id"))
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+
+		if err := srv.DeleteAnimal(id); err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to delete animal")
+		}
+
+		return c.Status(fiber.StatusNoContent).SendString("Animal deleted")
+	}
 }

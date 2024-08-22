@@ -2,28 +2,21 @@ package api
 
 import (
 	"vetblock/internal/api/handlers"
+	"vetblock/internal/service"
 	// "vetblock/internal/api/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRoutes(app *fiber.App) {
+func SetupRoutes(app *fiber.App, srv *service.Service) {
+	protected := app.Group("/api/v1")
 
-
-	// app.Post("/register", register)
-
-	// // Rota pública para login
-	// app.Post("/login", login)
-	protected := app.Group("/api/v1") // Exemplo de prefixo para rotas protegidas
-	// protected.Use(middleware.AuthMiddleware())
-
-
-    protected.Get("/blocks", handlers.GetBlockchain)
-    protected.Post("/blocks", handlers.AddBlock)
+	protected.Get("/blocks", handlers.GetBlockchain)
+	protected.Post("/blocks", handlers.AddBlock)
 	protected.Get("/blocks/:index/transactions", handlers.GetTransactions)
-	protected.Post("/animals", handlers.AddAnimalTransactionHandler)
-	protected.Get("/animals/:id", handlers.GetAnimalByIDHandler)
-
+	protected.Post("/animals", handlers.AddAnimalTransactionHandler(srv))
+	protected.Get("/animals/:id", handlers.GetAnimalByIDHandler(srv))
+	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler(srv))
 
 	protected.Post("/consultation/schedule", handlers.ScheduleConsultationHandler)
 	protected.Post("/consultation/:id/cancel", handlers.CancelConsultationHandler)

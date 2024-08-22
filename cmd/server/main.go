@@ -4,25 +4,41 @@ import (
 	"log"
 	"vetblock/internal/api"
 	"vetblock/internal/blockchain"
+	"vetblock/internal/db"
+	"vetblock/internal/db/repository"
 	"vetblock/internal/network"
+	"vetblock/internal/service"
 
 	"github.com/gofiber/fiber/v2"
 )
 
+
+
 func main() {
-    app := fiber.New()
+	
+    database := db.NewDb()
+	// Inicializar o repositório
+	animalRepo := &repository.AnimalRepository{Db: database}
 
-    // Inicializar a blockchain com o bloco gênese
-    blockchain.InitializeBlockchain()
+	// Inicializar o serviço
+	srv := service.NewService(animalRepo)
+
+	// Inicializar o Fiber e as rotas
+	app := fiber.New()
+
+	// Inicializar a blockchain com o bloco gênese
+	blockchain.InitializeBlockchain()
 	network.StartServer()
-    // Configurar as rotas
-    api.SetupRoutes(app)
 
-    // Rota de teste
-    app.Get("/", func(c *fiber.Ctx) error {
-        return c.SendString("VetBlockchain API")
-    })
+	// Configurar as rotas, passando o serviço
+	api.SetupRoutes(app, srv)
 
-    log.Println("Servidor iniciado na porta 8080...")
-    log.Fatal(app.Listen(":8082"))
+	// Rota de teste
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("VetBlockchain API")
+	})
+
+	log.Println("Servidor iniciado na porta 8080...")
+	log.Fatal(app.Listen(":8082"))
 }
+

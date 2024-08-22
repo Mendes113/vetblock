@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"errors"
 	"log"
 	"vetblock/internal/db/model"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -12,8 +14,46 @@ type AnimalRepository struct {
 }
 
 
-func (r *AnimalRepository) SaveAnimal(animal *model.Animal){
-	r.Db.Create(animal)
+// Salva um animal no banco de dados e retorna um erro se ocorrer
+func (r *AnimalRepository) SaveAnimal(animal *model.Animal) error {
+	if err := r.Db.Create(animal).Error; err != nil {
+		log.Print("Error saving animal:", err)
+		return err
+	}
 	log.Print(animal)
 	log.Print("Repository Saving Animal")
+	return nil
 }
+
+
+func (r *AnimalRepository) FindAnimalByID(id uuid.UUID) (*model.Animal, error) {
+	var animal model.Animal
+	if err := r.Db.Where("id = ? AND deleted_at IS NULL", id).First(&animal).Error; err != nil {
+		log.Print("Error finding animal:", err)
+		return nil, err
+	}
+	return &animal, nil
+}
+
+//delete animal
+func (r *AnimalRepository) DeleteAnimal(id uuid.UUID) error {
+	var animal model.Animal
+	if err := r.Db.Where("id = ?", id).First(&animal).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Print("Animal not found:", err)
+			return nil
+		}
+		log.Print("Error finding animal:", err)
+		return err
+	}
+
+	// Soft delete
+	if err := r.Db.Delete(&animal).Error; err != nil {
+		log.Print("Error deleting animal:", err)
+		return err
+	}
+
+	log.Print("Animal soft deleted successfully")
+	return nil
+}
+

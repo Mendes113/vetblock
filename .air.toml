@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = "./server"  # O caminho para o binário que será gerado
-  cmd = "go build -o ./server main.go"  # Certifique-se de que está apontando para o arquivo main.go
+  cmd = "go build -o ./server ./cmd/server/main.go"  # Certifique-se de que está apontando para o arquivo main.go correto
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []
@@ -13,7 +13,7 @@ tmp_dir = "tmp"
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""
-  include_dir = []
+  include_dir = [".", "internal"]  # Inclui o diretório internal para observação
   include_ext = ["go", "tpl", "tmpl", "html"]
   include_file = []
   kill_delay = "0s"
