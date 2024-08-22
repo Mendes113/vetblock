@@ -19,7 +19,7 @@ type Animal struct {
 	CreatedAt   time.Time       `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time       `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt  `gorm:"index" json:"-"` // Soft delete
-	CPFTutor    string       `gorm:"type:uuid;not null" json:"CPFtutor" validate:"required,uuid"`
+	CPFTutor    string          `gorm:"type:char(11);not null" json:"cpf_tutor" validate:"required,len=11"`
 }
 
 

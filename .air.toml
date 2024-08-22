@@ -4,8 +4,8 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "/cmd/server/"
-  cmd = "go build -o /cmd/server/"
+  bin = "./server"  # O caminho para o binário que será gerado
+  cmd = "go build -o ./server main.go"  # Certifique-se de que está apontando para o arquivo main.go
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []

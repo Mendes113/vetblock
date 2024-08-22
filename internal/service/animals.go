@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 	"vetblock/internal/blockchain"
 	"vetblock/internal/db"
@@ -16,7 +17,7 @@ import (
 var repositoryAnimal *repository.AnimalRepository
 
 func AddAnimalTransaction(animal model.Animal, sender, receiver string, amount float64) error {
-	// Converta o objeto Animal para JSON
+	log.Println("adding animal transaction")
 	animalJSON, err := json.Marshal(animal)
 	if err != nil {
 		return err // Retorna o erro se a conversão falhar
