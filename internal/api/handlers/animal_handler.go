@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Adiciona um novo animal
+
 func AddAnimalTransactionHandler(c *fiber.Ctx) error {
 	var animal model.Animal
 	if err := c.BodyParser(&animal); err != nil {
