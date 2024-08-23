@@ -21,7 +21,7 @@ type AnimalResponse struct {
 
 
 
-func AddAnimalTransactionHandler() fiber.Handler {
+func AddAnimalHandler() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var animal AnimalResponse
 		animal.ID = uuid.New()
@@ -41,11 +41,8 @@ func AddAnimalTransactionHandler() fiber.Handler {
 			CPFTutor:    animal.CPFTutor,
 		}
 
-		sender := "System"
-		receiver := "User"
-	
 
-		err := service.AddAnimalTransaction(animalModel, sender, receiver)
+		err := service.AddAnimal(animalModel)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to add animal transaction")
 		}

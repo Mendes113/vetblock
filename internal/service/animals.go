@@ -3,37 +3,69 @@ package service
 import (
 	// "crypto/sha256"
 	// "encoding/hex"
+	"errors"
 	"fmt"
 	"log"
 	"vetblock/internal/db/model"
 	"vetblock/internal/db/repository"
+
 	"github.com/google/uuid"
 )
 
 
 
 
-func  AddAnimalTransaction(animal model.Animal, sender, receiver string) error {
-	log.Println("adding animal transaction")
+func AddAnimal(animal model.Animal) error {
+    log.Println("adding animal transaction")
 
+    repo := repository.NewAnimalRepository()
+    existingAnimal, err := repo.FindByUniqueAttributes(animal)
+    if err != nil {
+        return err
+    }
+    if existingAnimal != nil {
+        return errors.New("animal já existe")
+    }
+    
+    if err := repo.SaveAnimal(&animal); err != nil {
+        return err
+    }
 
-	
-
-	repo := repository.NewAnimalRepository()
-	if err := repo.SaveAnimal(&animal); err != nil {
-		return err
-	}
-
-	return nil
+    return nil
 }
 
+func GetAnimalByID(id uuid.UUID) (*model.Animal, error) {
+	repo := repository.NewAnimalRepository()
+	animal, err := repo.FindAnimalByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return animal, nil
+}
 
 
 // Atualiza um animal na blockchain
 func  UpdateAnimal(id uuid.UUID, updatedAnimal model.Animal) error {
-	// Adicione a lógica para atualizar um animal existente
-	// Isso pode envolver encontrar o bloco ou transação correspondente e atualizar as informações
-	fmt.Printf("Atualizando animal %s com %v\n", id, updatedAnimal)
+	log.Println("Atualizando animal")
+
+	repo := repository.NewAnimalRepository()
+	animal, err := repo.FindAnimalByID(id)
+	if err != nil {
+		return err
+	}
+
+	// Atualiza os campos do animal
+	animal.Name = updatedAnimal.Name
+	animal.Species = updatedAnimal.Species
+	animal.Breed = updatedAnimal.Breed
+	animal.Age = updatedAnimal.Age
+	animal.Description = updatedAnimal.Description
+	animal.CPFTutor = updatedAnimal.CPFTutor
+
+	if err := repo.SaveAnimal(animal); err != nil {
+		return err
+	}
+	
 
 	return nil
 }

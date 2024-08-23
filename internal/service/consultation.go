@@ -1,139 +1,134 @@
 package service
 
 import (
-	
+	"errors"
+	"log"
 	"vetblock/internal/db/model"
-
-	
+	"vetblock/internal/db/repository"
 )
 
-func AddConsultation(consultation model.Consultation, sender, receiver string, amount float64) error {
+// Função para obter o repositório de consultas
+func getConsultationRepo() *repository.ConsultationRepository {
+	return repository.NewConsultationRepository()
+}
 
-	// // Validação da consulta
-	// if err := ValidateConsultation(consultation); err != nil {
-	// 	log.Printf("Erro ao validar consulta: %v", err)
-	// 	return err
-	// }
+// Função para verificar se a consulta já existe e retornar erro se necessário
+func checkConsultationExistence(repo repository.ConsultationRepository, consultation model.Consultation) (*model.Consultation, error) {
+	existingConsultation, err := repo.FindConsultationByID(consultation)
+	if err != nil {
+		return nil, err
+	}
+	if existingConsultation == nil {
+		return nil, errors.New("consulta não encontrada")
+	}
+	return existingConsultation, nil
+}
 
-	// // Converta o objeto Consultation para JSON
-	// consultationJSON, err := json.Marshal(consultation)
-	// if err != nil {
-	// 	log.Printf("Erro ao converter consulta para JSON: %v", err)
-	// 	return err // Retorna o erro se a conversão falhar
-	// }
+func AddConsultation(consultation model.Consultation) error {
+	repo := getConsultationRepo()
+	log.Print(consultation) // Você pode querer verificar o conteúdo aqui
 
+	// Certifique-se de que FindConsultationByID usa ponteiros
+	existingConsultation, err := repo.FindConsultationByID(consultation)
+	if err != nil {
+		return err
+	}
+	log.Print("existingConsultation")
+	log.Print(existingConsultation)
+	if existingConsultation != nil {
+		return errors.New("consulta já existe")
+	}
 
-	
+	if err := repo.SaveConsultation(&consultation); err != nil {
+		return err
+	}
+
+	// Verifique se o veterinário existe
+	vet, err := GetVeterinaryByCRVM(consultation.CRVM)
+	if err != nil {
+		return err
+	}
+
+	if vet == nil {
+		return errors.New("veterinário não encontrado")
+	}
+
+	// Verifique se o animal existe
+	animal, err := GetAnimalByID(consultation.AnimalID)
+	if err != nil {
+		return err
+	}
+
+	if animal == nil {
+		return errors.New("animal não encontrado")
+	}
 
 	return nil
 }
 
+func UpdateConsultation(id model.Consultation, updatedConsultation model.Consultation) error {
+	repo := getConsultationRepo()
+	consultation, err := checkConsultationExistence(*repo, id)
+	if err != nil {
+		return err
+	}
 
-// // Função para buscar uma consulta por ID do animal na blockchain
-// func GetConsultationByAnimalID(id uuid.UUID) ([]model.Consultation, error) {
-// 	log.Printf("Buscando consultas por Animal ID: %v", id)
-// 	var consultations []model.Consultation
-// 	for _, block := range blockchain.Blockchain {
-// 		for _, transaction := range block.Transactions {
-// 			var consultation model.Consultation
-// 			err := json.Unmarshal([]byte(transaction.Data), &consultation)
-// 			if err != nil {
-// 				log.Printf("Erro ao decodificar transação: %v", err)
-// 				return nil, err
-// 			}
-// 			if consultation.AnimalID == id {
-// 				consultations = append(consultations, consultation)
-// 				log.Printf("Consulta encontrada: %v", consultation)
-// 			}
-// 		}
-// 	}
-// 	log.Printf("Total de consultas encontradas para Animal ID %v: %d", id, len(consultations))
-// 	return consultations, nil
-// }
+	// Atualiza os campos da consulta
+	consultation.AnimalID = updatedConsultation.AnimalID
+	consultation.CRVM = updatedConsultation.CRVM
+	consultation.ConsultationDate = updatedConsultation.ConsultationDate
+	consultation.ConsultationDescription = updatedConsultation.ConsultationDescription
+	consultation.ConsultationType = updatedConsultation.ConsultationType
+	consultation.ConsultationPrescription = updatedConsultation.ConsultationPrescription
+	consultation.ConsultationPrice = updatedConsultation.ConsultationPrice
 
-// // Função para buscar uma consulta por ID do veterinário na blockchain
-// func GetConsultationByVeterinaryCRVM(crvm int) ([]model.Consultation, error) {
-// 	log.Printf("Buscando consultas por Veterinary ID: %v", crvm)
-// 	var consultations []model.Consultation
-// 	for _, block := range blockchain.Blockchain {
-// 		for _, transaction := range block.Transactions {
-// 			var consultation model.Consultation
-// 			err := json.Unmarshal([]byte(transaction.Data), &consultation)
-// 			if err != nil {
-// 				log.Printf("Erro ao decodificar transação: %v", err)
-// 				return nil, err
-// 			}
-// 			if consultation.CRVM == crvm{
-// 				consultations = append(consultations, consultation)
-// 				log.Printf("Consulta encontrada: %v", consultation)
-// 			}
-// 		}
-// 	}
-// 	log.Printf("Total de consultas encontradas para Veterinary ID %v: %d", crvm, len(consultations))
-// 	return consultations, nil
-// }
+	if err := repo.SaveConsultation(consultation); err != nil {
+		return err
+	}
 
-// // Função para agendar consulta
-// func ScheduleConsultation(consultation model.Consultation, sender, receiver string, amount float64) error {
-// 	log.Printf("Agendando consulta: %v", consultation)
-// 	consultation.ConsultationStatus = "Scheduled"
-// 	return AddConsultationTransaction(consultation, sender, receiver, amount)
-// }
+	return nil
+}
 
-// // Função para cancelar consulta
-// func CancelConsultation(consultation model.Consultation, sender, receiver string, amount float64) error {
-// 	log.Printf("Cancelando consulta: %v", consultation)
-// 	consultation.ConsultationStatus = "Canceled"
-// 	return AddConsultationTransaction(consultation, sender, receiver, amount)
-// }
+func DeleteConsultation(id model.Consultation) error {
+	repo := getConsultationRepo()
+	consultation, err := checkConsultationExistence(*repo, id)
+	if err != nil {
+		return err
+	}
 
-// // Função para confirmar consulta
-// func ConfirmConsultation(consultation model.Consultation, sender, receiver string, amount float64) error {
-// 	log.Printf("Confirmando consulta: %v", consultation)
-// 	consultation.ConsultationStatus = "Confirmed"
-// 	return AddConsultationTransaction(consultation, sender, receiver, amount)
-// }
+	if _, err := repo.DeleteConsultation(*consultation); err != nil {
+		return err
+	}
 
-// // Função para atualizar consulta
-// func UpdateConsultation(consultation model.Consultation, sender, receiver string, amount float64) error {
-// 	log.Printf("Atualizando consulta: %v", consultation)
-// 	return AddConsultationTransaction(consultation, sender, receiver, amount)
-// }
+	return nil
+}
 
-// func AddConsultationHistory(consultation model.Consultation, changes []model.Change) {
-// 	history := model.ConsultationHistory{
-// 		ConsultationID: consultation.ID,
-// 		Changes:        changes,
-// 		Timestamp:      time.Now(),
-// 	}
-// 	// Aqui, você pode armazenar o histórico na blockchain ou em um armazenamento separado
-// 	log.Printf("Histórico de consulta adicionado: %v", history)
-// }
+// Adapte a função getConsultationBy para aceitar métodos com receiver de ponteiro
+func getConsultationBy(criteria func(*repository.ConsultationRepository, model.Consultation) (*model.Consultation, error), id model.Consultation) (*model.Consultation, error) {
+	repo := getConsultationRepo()
+	return criteria(repo, id)
+}
 
-// func TrackChanges(oldConsultation, newConsultation model.Consultation) []model.Change {
-// 	var changes []model.Change
-// 	// Comparar os campos relevantes e adicionar ao slice de mudanças
-// 	if oldConsultation.ConsultationStatus != newConsultation.ConsultationStatus {
-// 		changes = append(changes, model.Change{
-// 			Field:    "ConsultationStatus",
-// 			OldValue: oldConsultation.ConsultationStatus,
-// 			NewValue: newConsultation.ConsultationStatus,
-// 		})
-// 	}
-// 	// Adicionar mais comparações conforme necessário
-// 	return changes
-// }
+func GetConsultationByID(id model.Consultation) (*model.Consultation, error) {
+	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByID, id)
+}
 
-// func ValidateConsultation(consultation model.Consultation) error {
-// 	if consultation.AnimalID == [16]byte{} {
-// 		return errors.New("AnimalID não pode ser zero")
-// 	}
-// 	if consultation.CRVM == 0 {
-// 		return errors.New("VeterinaryID não pode ser zero")
-// 	}
-// 	if consultation.ConsultationPrice < 0 {
-// 		return errors.New("ConsultationPrice não pode ser negativo")
-// 	}
-// 	// Adicione outras validações conforme necessário
-// 	return nil
-// }
+func GetConsultationByAnimalID(id model.Consultation) (*model.Consultation, error) {
+	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByAnimalID, id)
+}
+
+func GetConsultationByVeterinaryCRVM(id model.Consultation) (*model.Consultation, error) {
+	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByVeterinaryCRVM, id)
+}
+
+func GetConsultationByDate(id model.Consultation) (*model.Consultation, error) {
+	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByDate, id)
+}
+
+func GetConsultationByDateRange(id model.Consultation) (*model.Consultation, error) {
+	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByDateRange, id)
+}
+
+func GetConsultationByAnimalIDAndDateRange(id model.Consultation) (*model.Consultation, error) {
+	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByAnimalIDAndDateRange, id)
+}

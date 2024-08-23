@@ -9,7 +9,7 @@ import (
 )
 
 type Veterinary struct {
-	CRVM      string         `gorm:"type:char(12);primary_key" json:"crvm" validate:"required,len=12"`
+	CRVM      string         `gorm:"column:crvm;type:char(12);primary_key" json:"crvm" validate:"required,len=12"`
 	Name      string         `json:"name" validate:"required,min=2,max=100"`
 	LastName  string         `json:"last_name" validate:"required,min=2,max=100"`
 	Email     string         `json:"email" validate:"required,email"`
@@ -18,7 +18,6 @@ type Veterinary struct {
 	UpdatedAt time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
-
 
 func isValidCRVM(crvm string) bool {
 	re := regexp.MustCompile(`^[0-9]{6,8}-[A-Z]{2}$`)
