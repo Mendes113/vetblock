@@ -10,17 +10,11 @@ import (
 func SetupRoutes(app *fiber.App) {
 	protected := app.Group("/api/v1")
 
-	protected.Get("/blocks", handlers.GetBlockchain)
-	protected.Post("/blocks", handlers.AddBlock)
-	protected.Get("/blocks/:index/transactions", handlers.GetTransactions)
+	
+	
 	protected.Post("/animals", handlers.AddAnimalTransactionHandler())
-	protected.Get("/animals/:id", handlers.GetAnimalByIDHandler())
+	// protected.Get("/animals/:id", handlers.GetAnimalByIDHandler())
 	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler())
 
-	protected.Post("/consultation/schedule", handlers.ScheduleConsultationHandler)
-	protected.Post("/consultation/:id/cancel", handlers.CancelConsultationHandler)
-	protected.Post("/consultation/:id/confirm", handlers.ConfirmConsultationHandler)
-	protected.Put("/consultation/:id", handlers.UpdateConsultationHandler)
-	protected.Get("/consultation/animal/:animal_id", handlers.GetConsultationByAnimalIDHandler)
-	protected.Get("/consultation/veterinary/:veterinary_id", handlers.GetConsultationByVeterinaryIDHandler)
+
 }

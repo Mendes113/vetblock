@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 	"vetblock/internal/api"
-	"vetblock/internal/blockchain"
-	"vetblock/internal/network"
+	
+	
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,10 +20,7 @@ func main() {
 	// Inicializar o Fiber e as rotas
 	app := fiber.New()
 
-	// Inicializar a blockchain com o bloco gênese
-	blockchain.InitializeBlockchain()
-	network.StartServer()
-
+	
 	// Configurar as rotas, passando o serviço
 	api.SetupRoutes(app)
 

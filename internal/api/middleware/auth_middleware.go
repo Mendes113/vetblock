@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 	"vetblock/internal/auth"
-	"vetblock/internal/blockchain"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -85,13 +84,3 @@ func RateLimiterVerify() fiber.Handler {
 	return limiter.Limit
 }
 
-func BlockchainIntegrityMiddleware() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		if !blockchain.IsValid() { // Método hipotético para verificar a integridade da blockchain
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": "Blockchain corrompida",
-			})
-		}
-		return c.Next()
-	}
-}

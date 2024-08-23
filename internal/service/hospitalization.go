@@ -1,11 +1,10 @@
 package service
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"errors"
-	"log"
+	// "log"
 	"time"
-	"vetblock/internal/blockchain"
 	"vetblock/internal/db/model"
 
 	"github.com/google/uuid"
@@ -44,127 +43,113 @@ func ValidateHospitalization(hospitalization model.Hospitalization) error {
 	return nil
 }
 
-func AddHospitalizationTransaction(hospitalization model.Hospitalization, sender, receiver string, amount float64) error {
-	// Validação da hospitalização
-	if err := ValidateHospitalization(hospitalization); err != nil {
-		log.Printf("Erro ao validar hospitalização: %v", err)
-		return err
-	}
+// func AddHospitalization(hospitalization model.Hospitalization, sender, receiver string, amount float64) error {
+// 	// Validação da hospitalização
+// 	if err := ValidateHospitalization(hospitalization); err != nil {
+// 		log.Printf("Erro ao validar hospitalização: %v", err)
+// 		return err
+// 	}
 
-	hospitalizationJSON, err := json.Marshal(hospitalization)
-	if err != nil {
-		log.Printf("Erro ao converter hospitalização para JSON: %v", err)
-		return err
-	}
+// 	hospitalizationJSON, err := json.Marshal(hospitalization)
+// 	if err != nil {
+// 		log.Printf("Erro ao converter hospitalização para JSON: %v", err)
+// 		return err
+// 	}
 
-	transaction := blockchain.NewTransaction(sender, receiver,  string(hospitalizationJSON))
+	
 
-	// newBlock := Block{
-	// 	Index:        len(Blockchain) + 1,
-	// 	Timestamp:    time.Now(),
-	// 	Transactions: []Transaction{transaction},
-	// 	Hash:         "",
-	// 	PreviousHash: Blockchain[len(Blockchain)-1].Hash,
-	// }
+	
+// 	return nil
+// }
 
-	newBlock := blockchain.NewBlock(len(blockchain.Blockchain)+1, []blockchain.Transaction{*transaction}, blockchain.Blockchain[len(blockchain.Blockchain)-1].Hash)
+// // func GetHospitalizationByID(id uuid.UUID) (*model.Hospitalization, error) {
+// 	log.Printf("Buscando hospitalização por ID: %v", id)
+// 	for _, block := range blockchain.Blockchain {
+// 		for _, transaction := range block.Transactions {
+// 			var hospitalization model.Hospitalization
+// 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+// 			if err != nil {
+// 				log.Printf("Erro ao decodificar hospitalização: %v", err)
+// 				continue
+// 			}
+// 			if hospitalization.ID == id {
+// 				return &hospitalization, nil
+// 			}
+// 		}
+// 	}
+// 	return nil, errors.New("hospitalization not found")
+// }
 
-	difficulty := 2
-	newBlock.MineBlock(difficulty)
-	blockchain.Blockchain = append(blockchain.Blockchain, *newBlock)
-	log.Printf("Bloco adicionado à blockchain: %v", newBlock)
+// func GetHospitalizationsByPatientID(patientID uuid.UUID) ([]model.Hospitalization, error) {
+// 	log.Printf("Buscando hospitalizações por ID do paciente: %v", patientID)
+// 	var hospitalizations []model.Hospitalization
+// 	for _, block := range blockchain.Blockchain {
+// 		for _, transaction := range block.Transactions {
+// 			var hospitalization model.Hospitalization
+// 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+// 			if err != nil {
+// 				log.Printf("Erro ao decodificar hospitalização: %v", err)
+// 				continue
+// 			}
+// 			if hospitalization.PatientID == patientID {
+// 				hospitalizations = append(hospitalizations, hospitalization)
+// 			}
+// 		}
+// 	}
+// 	return hospitalizations, nil
+// }
 
-	return nil
-}
+// func GetHospitalizationsByDoctorID(CRVM int) ([]model.Hospitalization, error) {
+// 	log.Printf("Buscando hospitalizações por ID do médico: %v", CRVM)
+// 	var hospitalizations []model.Hospitalization
+// 	for _, block := range blockchain.Blockchain {
+// 		for _, transaction := range block.Transactions {
+// 			var hospitalization model.Hospitalization
+// 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+// 			if err != nil {
+// 				log.Printf("Erro ao decodificar hospitalização: %v", err)
+// 				continue
+// 			}
+// 			if hospitalization.CRVM == CRVM {
+// 				hospitalizations = append(hospitalizations, hospitalization)
+// 			}
+// 		}
+// 	}
+// 	return hospitalizations, nil
+// }
 
-func GetHospitalizationByID(id uuid.UUID) (*model.Hospitalization, error) {
-	log.Printf("Buscando hospitalização por ID: %v", id)
-	for _, block := range blockchain.Blockchain {
-		for _, transaction := range block.Transactions {
-			var hospitalization model.Hospitalization
-			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
-			if err != nil {
-				log.Printf("Erro ao decodificar hospitalização: %v", err)
-				continue
-			}
-			if hospitalization.ID == id {
-				return &hospitalization, nil
-			}
-		}
-	}
-	return nil, errors.New("hospitalization not found")
-}
+// // talvez deva ir para medication.go
+// func GetMedicationByHospitalizationID(id uuid.UUID) ([]string, error) {
+// 	log.Printf("Buscando medicamentos por ID da hospitalização: %v", id)
+// 	for _, block := range blockchain.Blockchain {
+// 		for _, transaction := range block.Transactions {
+// 			var hospitalization model.Hospitalization
+// 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+// 			if err != nil {
+// 				log.Printf("Erro ao decodificar hospitalização: %v", err)
+// 				continue
+// 			}
+// 			if hospitalization.ID == id {
+// 				return hospitalization.Medications, nil
+// 			}
+// 		}
+// 	}
+// 	return nil, errors.New("medication not found")
+// }
 
-func GetHospitalizationsByPatientID(patientID uuid.UUID) ([]model.Hospitalization, error) {
-	log.Printf("Buscando hospitalizações por ID do paciente: %v", patientID)
-	var hospitalizations []model.Hospitalization
-	for _, block := range blockchain.Blockchain {
-		for _, transaction := range block.Transactions {
-			var hospitalization model.Hospitalization
-			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
-			if err != nil {
-				log.Printf("Erro ao decodificar hospitalização: %v", err)
-				continue
-			}
-			if hospitalization.PatientID == patientID {
-				hospitalizations = append(hospitalizations, hospitalization)
-			}
-		}
-	}
-	return hospitalizations, nil
-}
-
-func GetHospitalizationsByDoctorID(CRVM int) ([]model.Hospitalization, error) {
-	log.Printf("Buscando hospitalizações por ID do médico: %v", CRVM)
-	var hospitalizations []model.Hospitalization
-	for _, block := range blockchain.Blockchain {
-		for _, transaction := range block.Transactions {
-			var hospitalization model.Hospitalization
-			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
-			if err != nil {
-				log.Printf("Erro ao decodificar hospitalização: %v", err)
-				continue
-			}
-			if hospitalization.CRVM == CRVM {
-				hospitalizations = append(hospitalizations, hospitalization)
-			}
-		}
-	}
-	return hospitalizations, nil
-}
-
-// talvez deva ir para medication.go
-func GetMedicationByHospitalizationID(id uuid.UUID) ([]string, error) {
-	log.Printf("Buscando medicamentos por ID da hospitalização: %v", id)
-	for _, block := range blockchain.Blockchain {
-		for _, transaction := range block.Transactions {
-			var hospitalization model.Hospitalization
-			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
-			if err != nil {
-				log.Printf("Erro ao decodificar hospitalização: %v", err)
-				continue
-			}
-			if hospitalization.ID == id {
-				return hospitalization.Medications, nil
-			}
-		}
-	}
-	return nil, errors.New("medication not found")
-}
-
-func GetHospitalizations() ([]model.Hospitalization, error) {
-	log.Printf("Buscando todas as hospitalizações")
-	var hospitalizations []model.Hospitalization
-	for _, block := range blockchain.Blockchain {
-		for _, transaction := range block.Transactions {
-			var hospitalization model.Hospitalization
-			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
-			if err != nil {
-				log.Printf("Erro ao decodificar hospitalização: %v", err)
-				continue
-			}
-			hospitalizations = append(hospitalizations, hospitalization)
-		}
-	}
-	return hospitalizations, nil
-}
+// func GetHospitalizations() ([]model.Hospitalization, error) {
+// 	log.Printf("Buscando todas as hospitalizações")
+// 	var hospitalizations []model.Hospitalization
+// 	for _, block := range blockchain.Blockchain {
+// 		for _, transaction := range block.Transactions {
+// 			var hospitalization model.Hospitalization
+// 			err := json.Unmarshal([]byte(transaction.Data), &hospitalization)
+// 			if err != nil {
+// 				log.Printf("Erro ao decodificar hospitalização: %v", err)
+// 				continue
+// 			}
+// 			hospitalizations = append(hospitalizations, hospitalization)
+// 		}
+// 	}
+// 	return hospitalizations, nil
+// }

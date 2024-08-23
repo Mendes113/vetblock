@@ -43,9 +43,9 @@ func AddAnimalTransactionHandler() fiber.Handler {
 
 		sender := "System"
 		receiver := "User"
-		amount := 0.0
+	
 
-		err := service.AddAnimalTransaction(animalModel, sender, receiver, amount)
+		err := service.AddAnimalTransaction(animalModel, sender, receiver)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to add animal transaction")
 		}
@@ -54,21 +54,21 @@ func AddAnimalTransactionHandler() fiber.Handler {
 	}
 }
 
-func GetAnimalByIDHandler() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		id, err := uuid.Parse(c.Params("id"))
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
-		}
+// func GetAnimalByIDHandler() fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		id, err := uuid.Parse(c.Params("id"))
+// 		if err != nil {
+// 			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+// 		}
 
-		animal, err := service.GetAnimalByID(id)
-		if err != nil {
-			return c.Status(fiber.StatusNotFound).SendString(err.Error())
-		}
+// 		animal, err := service.GetAnimalByID(id)
+// 		if err != nil {
+// 			return c.Status(fiber.StatusNotFound).SendString(err.Error())
+// 		}
 
-		return c.JSON(animal)
-	}
-}
+// 		return c.JSON(animal)
+// 	}
+// }
 
 func UpdateAnimalHandler() fiber.Handler {
 	return func(c *fiber.Ctx) error {
