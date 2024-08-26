@@ -30,6 +30,6 @@ func main() {
 	})
 
 	log.Println("Servidor iniciado na porta 8080...")
-	log.Fatal(app.Listen(":8082"))
+	log.Fatal(app.Listen(":8081"))
 }
 

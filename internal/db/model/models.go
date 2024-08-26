@@ -89,3 +89,24 @@ type Hospitalization struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
 }
 
+
+type Medication struct {
+	ID                uuid.UUID      `gorm:"type:uuid;primary_key;" json:"medication_id"`
+	Name              string         `json:"name" gorm:"not null" validate:"required,min=2,max=100"`
+	Description       string         `json:"description" validate:"max=255"`
+	Price             float64        `json:"price" validate:"required,gte=0"`
+	BatchNumber       string         `json:"batch_number" validate:"required"`
+	Concentration     string        `json:"concentration" validate:"required, min=2"`
+	Presentation      string         `json:"presentation" validate:"required"`
+	DosageForm        string         `json:"dosage_form" validate:"required"`
+	ActivePrinciples []string         `json:"active_principles" gorm:"type:json" validate:"required"`
+	Manufacturer      string         `json:"manufacturer" validate:"required"`
+	Quantity          int            `json:"quantity" validate:"gte=0"`
+	Unit              string         `json:"unit" validate:"required"`
+	StorageConditions string         `json:"storage_conditions"`
+	PrescriptionRequired bool        `json:"prescription_required"`
+	Expiration        time.Time      `json:"expiration" validate:"required"`
+	CreatedAt         time.Time      `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt         time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
+	DeletedAt         gorm.DeletedAt `gorm:"index" json:"-"` // Soft delete
+}
