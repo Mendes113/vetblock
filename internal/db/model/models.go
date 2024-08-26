@@ -14,6 +14,7 @@ type Animal struct {
 	Species     string          `json:"species" gorm:"not null" validate:"required"`
 	Breed       string          `json:"breed" gorm:"not null" validate:"required"`
 	Age         int             `json:"age" validate:"gte=0"`
+	Weight      float64         `json:"weight" validate:"gte=0"`
 	Description string          `json:"description"`
 	Timestamp   time.Time       `json:"timestamp" gorm:"autoCreateTime"`
 	CreatedAt   time.Time       `json:"created_at" gorm:"autoCreateTime"`

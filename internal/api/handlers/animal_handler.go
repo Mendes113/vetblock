@@ -14,6 +14,7 @@ type AnimalResponse struct {
 	Name        string          `json:"name" gorm:"not null" validate:"required,min=2,max=100"`
 	Species     string          `json:"species" gorm:"not null" validate:"required"`
 	Breed       string          `json:"breed" gorm:"not null" validate:"required"`
+	Weight	  float64         `json:"weight" validate:"gte=0"`
 	Age         int             `json:"age" validate:"gte=0"`
 	Description string          `json:"description"`
 	CPFTutor    string          `gorm:"type:char(11);not null" json:"cpf_tutor" validate:"required,len=11"`
@@ -36,6 +37,7 @@ func AddAnimalHandler() fiber.Handler {
 			Name:        animal.Name,
 			Species:     animal.Species,
 			Breed:       animal.Breed,
+			Weight:      animal.Weight,
 			Age:         animal.Age,
 			Description: animal.Description,
 			CPFTutor:    animal.CPFTutor,
