@@ -10,7 +10,10 @@ require (
 	gorm.io/gorm v1.25.11
 )
 
-require github.com/go-playground/validator/v10 v10.22.0
+require (
+	github.com/go-playground/validator/v10 v10.22.0
+	github.com/lib/pq v1.10.9
+)
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect

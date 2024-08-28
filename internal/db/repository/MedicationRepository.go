@@ -3,6 +3,7 @@ package repository
 import (
 	"log"
 	"time"
+	"vetblock/internal/db"
 	"vetblock/internal/db/model"
 
 	"github.com/google/uuid"
@@ -14,7 +15,9 @@ type MedicationRepository struct {
 }
 
 func NewMedicationRepository() *MedicationRepository {
-	return &MedicationRepository{}
+	return &MedicationRepository{
+		Db: db.NewDb(),
+	}
 }
 
 // Salva um medicamento no banco de dados e retorna um erro se ocorrer
@@ -28,13 +31,13 @@ func (r *MedicationRepository) SaveMedication(medication *model.Medication) erro
 	return nil
 }
 
-func (r *MedicationRepository) FindByUniqueAttributes(medication model.Medication) (*model.Medication, error) {
+func (r *MedicationRepository) FindByUniqueAttributes(medication *model.Medication) (*model.Medication) {
 	var med model.Medication
 	if err := r.Db.Where("name = ? AND concentration = ? AND presentation = ?", medication.Name, medication.Concentration, medication.Presentation).First(&med).Error; err != nil {
 		log.Print("Error finding medication:", err)
-		return nil, err
+		return nil
 	}
-	return &med, nil
+	return &med
 }
 
 func (r *MedicationRepository) FindMedicationByID(id uuid.UUID) (*model.Medication, error) {
@@ -77,6 +80,19 @@ func (r *MedicationRepository) UpdateMedication(medication *model.Medication) er
 	return nil
 }
 
+//increase medication quantity
+func (r *MedicationRepository) IncreaseMedicationQuantity(id uuid.UUID, quantity int) error {
+    err := r.Db.Model(&model.Medication{}).Where("id = ?", id).UpdateColumn("quantity", gorm.Expr("quantity + ?", quantity)).Error
+    if err != nil {
+        log.Print("Error updating medication quantity:", err)
+        return err
+    }
+    log.Print("Medication quantity updated successfully")
+    return nil
+}
+
+
+
 func (r *MedicationRepository) FindAllMedications() ([]model.Medication, error) {
 	var medications []model.Medication
 	if err := r.Db.Find(&medications).Error; err != nil {
@@ -96,7 +112,7 @@ func (r *MedicationRepository) FindMedicationClosestExpirationDate() (*model.Med
 	return &medication, nil
 }
 
-//find medication that will and expire in a range of days
+// find medication that will and expire in a range of days
 func (r *MedicationRepository) FindMedicationWillExpireInDays(days int) ([]model.Medication, error) {
 	var medications []model.Medication
 	if err := r.Db.Where("expiration_date BETWEEN ? AND ? AND deleted_at IS NULL", time.Now(), time.Now().AddDate(0, 0, days)).
@@ -219,7 +235,7 @@ func (r *MedicationRepository) FindMedicationByManufacturerAndName(manufacturer 
 	return &medication, nil
 }
 
-//medication by active substance
+// medication by active substance
 func (r *MedicationRepository) FindMedicationByActiveSubstance(activeSubstance string) ([]model.Medication, error) {
 	var medications []model.Medication
 	if err := r.Db.Where("JSON_CONTAINS(active_substance, ?, '$')", activeSubstance).Find(&medications).Error; err != nil {

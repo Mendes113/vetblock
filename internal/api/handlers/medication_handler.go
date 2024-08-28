@@ -13,7 +13,7 @@ import (
 type MedicationResponse struct {
 	ID               uuid.UUID `json:"id"`
 	Name             string    `json:"name" validate:"required,min=2,max=100"`
-	ActivePrinciples []string  `json:"active_principle" validate:"required"`
+	ActivePrinciples []string  `json:"active_principles" validate:"required"`
 	Manufacturer     string    `json:"manufacturer" validate:"required"`
 	Concentration    string    `json:"concentration" validate:"required"`
 	Presentation     string    `json:"presentation" validate:"required"`
@@ -35,7 +35,7 @@ func AddMedicationHandler() fiber.Handler {
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid date format for expiration_date: " + err.Error())
 		}
-
+		medicationResponse.ID = uuid.New()
 		// Convert MedicationResponse to Medication model
 		medicationModel := model.Medication{
 			ID:               medicationResponse.ID,
@@ -50,13 +50,13 @@ func AddMedicationHandler() fiber.Handler {
 		}
 
 		// Add medication to the database
-		err = service.AddMedication(medicationModel)
+		addedMed, err := service.AddMedication(&medicationModel)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to add medication: " + err.Error())
 		}
 
 		// Return the added medication response
-		return c.Status(fiber.StatusCreated).JSON(medicationResponse)
+		return c.Status(fiber.StatusCreated).JSON(addedMed)
 	}
 }
 func GetMedicationByIDHandler() fiber.Handler {

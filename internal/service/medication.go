@@ -13,24 +13,33 @@ func getMedicationRepo() *repository.MedicationRepository {
 	return repository.NewMedicationRepository()
 }
 
-func AddMedication(medication model.Medication) error {
-	log.Println("adding medication transaction")
+func AddMedication(medication *model.Medication) (*model.Medication,error) {
+    log.Println("adding medication transaction")
+    log.Print("existingMedication")
+    log.Print(medication)
 
-	repo := repository.NewMedicationRepository()
-	existingMedication, err := repo.FindByUniqueAttributes(medication)
-	if err != nil {
-		return err
-	}
-	if existingMedication != nil {
-		return errors.New("medication já existe")
-	}
+    repo := repository.NewMedicationRepository()
+    existingMedication := repo.FindByUniqueAttributes(medication)
+   
 
-	if err := repo.SaveMedication(&medication); err != nil {
-		return err
-	}
+    if existingMedication != nil {
+        if err := repo.IncreaseMedicationQuantity(existingMedication.ID, medication.Quantity); err != nil {
+            log.Print("Error increasing medication quantity:", err)
+            return nil,err
+        }
+        log.Print("Medication already exists, increasing quantity")
+        return existingMedication, nil
+    }
 
-	return nil
+    if err := repo.SaveMedication(medication); err != nil {
+        log.Print("Error saving new medication:", err)
+        return nil, err
+    }
+
+    log.Print("New medication added successfully")
+    return medication, nil
 }
+
 
 func GetMedicationByID(id uuid.UUID) (*model.Medication, error) {
 	repo := getMedicationRepo()
