@@ -2,6 +2,9 @@ package api
 
 import (
 	"vetblock/internal/api/handlers"
+	"vetblock/internal/db/repository"
+	"vetblock/internal/service"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -10,6 +13,11 @@ func SetupRoutes(app *fiber.App) {
 
 	// Rotas para Animais
 	protected.Post("/animals", handlers.AddAnimalHandler())
+	protected.Post("/animals/dosage", handlers.AddDosageHandler(
+		service.NewDosageService(
+		repository.NewDosageRepository(
+			repository.GetDB(),
+		))))
 	// protected.Get("/animals/:id", handlers.GetAnimalByIDHandler())
 	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler())
 

@@ -54,20 +54,20 @@ func (s *DosageService) AddDosage(ctx context.Context, dosage *model.Dosage) err
             return errors.New("consulta não encontrada")
         }
     }
-	hospitazationRepository := repository.NewHospitalizationRepository()
-    // Verifica se a hospitalização existe, se HospitalizationID não for nil
-    if dosage.HospitalizationID != nil {
-        hospitalization, err := hospitazationRepository.GetHospitalizationByID(*dosage.HospitalizationID) // Desreferencia o ponteiro
-        if err != nil {
-            return err
-        }
+	// hospitazationRepository := repository.NewHospitalizationRepository()
+    // // Verifica se a hospitalização existe, se HospitalizationID não for nil
+    // if dosage.HospitalizationID != nil {
+    //     hospitalization, err := hospitazationRepository.GetHospitalizationByID(*dosage.HospitalizationID) // Desreferencia o ponteiro
+    //     if err != nil {
+    //         return err
+    //     }
 
-        if hospitalization == nil {
-            return errors.New("hospitalização não encontrada")
-        }
-    }
+    //     if hospitalization == nil {
+    //         return errors.New("hospitalização não encontrada")
+    //     }
+    // }
 
-    return s.repo.Create(ctx, dosage)
+    return s.repo.Create(ctx, dosage, medication.ID, dosage.Quantity)
 }
 
 func GetHospitalizationByID(uUID uuid.UUID) {

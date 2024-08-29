@@ -101,6 +101,18 @@ func (r *MedicationRepository) IncreaseMedicationQuantity(id uuid.UUID, quantity
 	return nil
 }
 
+// decrease medication quantity
+func (r *MedicationRepository) DecreaseMedicationQuantity(id uuid.UUID, quantity int) error {
+	err := r.Db.Model(&model.Medication{}).Where("id = ?", id).UpdateColumn("quantity", gorm.Expr("quantity - ?", quantity)).Error
+	if err != nil {
+		log.Print("Error updating medication quantity:", err)
+		return err
+	}
+	log.Print("Medication quantity updated successfully")
+	return nil
+}
+
+
 func (r *MedicationRepository) FindAllMedications() ([]model.Medication, error) {
 	var medications []model.Medication
 	if err := r.Db.Find(&medications).Error; err != nil {
