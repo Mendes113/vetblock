@@ -59,11 +59,15 @@ func AddConsultationHandler() fiber.Handler {
             Observation:      consultation.Observation,
         }
 
-        err = service.AddConsultation(consultationModel)
+        err = service.AddConsultation(&consultationModel)
         if err != nil {
             return c.Status(fiber.StatusInternalServerError).SendString("Failed to add consultation transaction")
         }
 
-        return c.Status(fiber.StatusCreated).JSON(consultation)
+        return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+            "message": "Consulta adicionada com sucesso",
+        })
+        
     }
 }
+

@@ -41,6 +41,7 @@ func AddMedication(medication *model.Medication) (*model.Medication,error) {
 }
 
 
+
 func GetMedicationByID(id uuid.UUID) (*model.Medication, error) {
 	repo := getMedicationRepo()
 	medication, err := repo.FindMedicationByID(id)

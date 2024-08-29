@@ -1,20 +1,29 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"log"
 	"vetblock/internal/db/model"
 	"vetblock/internal/db/repository"
+
+	"github.com/google/uuid"
 )
+
+type ConsultationService struct{
+	repo repository.ConsultationRepository
+}
 
 // Função para obter o repositório de consultas
 func getConsultationRepo() *repository.ConsultationRepository {
-	return repository.NewConsultationRepository()
+	return repository.NewConsultationRepository(
+		repository.GetDB(),
+	)
 }
 
 // Função para verificar se a consulta já existe e retornar erro se necessário
-func checkConsultationExistence(repo repository.ConsultationRepository, consultation model.Consultation) (*model.Consultation, error) {
-	existingConsultation, err := repo.FindConsultationByID(consultation)
+func checkConsultationExistence(repo *repository.ConsultationRepository, id uuid.UUID) (*model.Consultation, error) {
+	existingConsultation, err := repo.FindConsultationByID(context.Background(), id)
 	if err != nil {
 		return nil, err
 	}
@@ -24,22 +33,19 @@ func checkConsultationExistence(repo repository.ConsultationRepository, consulta
 	return existingConsultation, nil
 }
 
-func AddConsultation(consultation model.Consultation) error {
+func AddConsultation(consultation *model.Consultation) error {
 	repo := getConsultationRepo()
 	log.Print(consultation) // Você pode querer verificar o conteúdo aqui
 
-	// Certifique-se de que FindConsultationByID usa ponteiros
-	existingConsultation, err := repo.FindConsultationByID(consultation)
-	if err != nil {
-		return err
-	}
-	log.Print("existingConsultation")
-	log.Print(existingConsultation)
+	// Verifique se a consulta já existe
+	existingConsultation, _ := repo.FindConsultationByID(context.Background(), consultation.ID)
+	
 	if existingConsultation != nil {
 		return errors.New("consulta já existe")
 	}
 
-	if err := repo.SaveConsultation(&consultation); err != nil {
+	// Salve a nova consulta
+	if err := repo.SaveConsultation(context.Background(), consultation); err != nil {
 		return err
 	}
 
@@ -66,9 +72,9 @@ func AddConsultation(consultation model.Consultation) error {
 	return nil
 }
 
-func UpdateConsultation(id model.Consultation, updatedConsultation model.Consultation) error {
+func UpdateConsultation(id uuid.UUID, updatedConsultation *model.Consultation) error {
 	repo := getConsultationRepo()
-	consultation, err := checkConsultationExistence(*repo, id)
+	consultation, err := checkConsultationExistence(repo, id)
 	if err != nil {
 		return err
 	}
@@ -82,21 +88,21 @@ func UpdateConsultation(id model.Consultation, updatedConsultation model.Consult
 	consultation.ConsultationPrescription = updatedConsultation.ConsultationPrescription
 	consultation.ConsultationPrice = updatedConsultation.ConsultationPrice
 
-	if err := repo.SaveConsultation(consultation); err != nil {
+	if err := repo.SaveConsultation(context.Background(), consultation); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func DeleteConsultation(id model.Consultation) error {
+func DeleteConsultation(id uuid.UUID) error {
 	repo := getConsultationRepo()
-	consultation, err := checkConsultationExistence(*repo, id)
+	consultation, err := checkConsultationExistence(repo, id)
 	if err != nil {
 		return err
 	}
 
-	if _, err := repo.DeleteConsultation(*consultation); err != nil {
+	if err := repo.DeleteConsultation(context.Background(), consultation.ID); err != nil {
 		return err
 	}
 
@@ -104,31 +110,40 @@ func DeleteConsultation(id model.Consultation) error {
 }
 
 // Adapte a função getConsultationBy para aceitar métodos com receiver de ponteiro
-func getConsultationBy(criteria func(*repository.ConsultationRepository, model.Consultation) (*model.Consultation, error), id model.Consultation) (*model.Consultation, error) {
+func getConsultationBy(
+	findFunc func(ctx context.Context, id uuid.UUID) (*model.Consultation, error),
+	ctx context.Context,
+	id uuid.UUID,
+) (*model.Consultation, error) {
+	return findFunc(ctx, id)
+}
+
+func GetConsultationByID(id uuid.UUID) (*model.Consultation, error) {
+	repo := getConsultationRepo() // Crie uma instância do repositório
+	return getConsultationBy(repo.FindConsultationByID, context.Background(), id)
+}
+
+func GetConsultationByAnimalID(animalID uuid.UUID) ([]model.Consultation, error) {
 	repo := getConsultationRepo()
-	return criteria(repo, id)
+	return repo.FindConsultationByAnimalID(context.Background(), animalID)
 }
 
-func GetConsultationByID(id model.Consultation) (*model.Consultation, error) {
-	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByID, id)
+func GetConsultationByVeterinaryCRVM(crvm string) ([]model.Consultation, error) {
+	repo := getConsultationRepo()
+	return repo.FindConsultationByVeterinaryCRVM(context.Background(), crvm)
 }
 
-func GetConsultationByAnimalID(id model.Consultation) (*model.Consultation, error) {
-	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByAnimalID, id)
+func GetConsultationByDate(date string) ([]model.Consultation, error) {
+	repo := getConsultationRepo()
+	return repo.FindConsultationByDate(context.Background(), date)
 }
 
-func GetConsultationByVeterinaryCRVM(id model.Consultation) (*model.Consultation, error) {
-	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByVeterinaryCRVM, id)
+func GetConsultationByDateRange(startDate, endDate string) ([]model.Consultation, error) {
+	repo := getConsultationRepo()
+	return repo.FindConsultationByDateRange(context.Background(), startDate, endDate)
 }
 
-func GetConsultationByDate(id model.Consultation) (*model.Consultation, error) {
-	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByDate, id)
-}
-
-func GetConsultationByDateRange(id model.Consultation) (*model.Consultation, error) {
-	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByDateRange, id)
-}
-
-func GetConsultationByAnimalIDAndDateRange(id model.Consultation) (*model.Consultation, error) {
-	return getConsultationBy((*repository.ConsultationRepository).FindConsultationByAnimalIDAndDateRange, id)
+func GetConsultationByAnimalIDAndDateRange(animalID uuid.UUID, startDate, endDate string) ([]model.Consultation, error) {
+	repo := getConsultationRepo()
+	return repo.FindConsultationByAnimalIDAndDateRange(context.Background(), animalID, startDate, endDate)
 }

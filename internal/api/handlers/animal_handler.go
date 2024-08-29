@@ -1,26 +1,26 @@
 package handlers
 
 import (
+	"context"
 	"log"
+	"time"
 	"vetblock/internal/db/model"
 	"vetblock/internal/service"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
-
 type AnimalResponse struct {
-	ID          uuid.UUID       `json:"id"`
-	Name        string          `json:"name" gorm:"not null" validate:"required,min=2,max=100"`
-	Species     string          `json:"species" gorm:"not null" validate:"required"`
-	Breed       string          `json:"breed" gorm:"not null" validate:"required"`
-	Weight	  float64         `json:"weight" validate:"gte=0"`
-	Age         int             `json:"age" validate:"gte=0"`
-	Description string          `json:"description"`
-	CPFTutor    string          `gorm:"type:char(11);not null" json:"cpf_tutor" validate:"required,len=11"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name" gorm:"not null" validate:"required,min=2,max=100"`
+	Species     string    `json:"species" gorm:"not null" validate:"required"`
+	Breed       string    `json:"breed" gorm:"not null" validate:"required"`
+	Weight      float64   `json:"weight" validate:"gte=0"`
+	Age         int       `json:"age" validate:"gte=0"`
+	Description string    `json:"description"`
+	CPFTutor    string    `gorm:"type:char(11);not null" json:"cpf_tutor" validate:"required,len=11"`
 }
-
-
 
 func AddAnimalHandler() fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -30,7 +30,6 @@ func AddAnimalHandler() fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
 		}
 
-		
 		// Convert the AnimalResponse to Animal
 		animalModel := model.Animal{
 			ID:          animal.ID,
@@ -42,7 +41,6 @@ func AddAnimalHandler() fiber.Handler {
 			Description: animal.Description,
 			CPFTutor:    animal.CPFTutor,
 		}
-
 
 		err := service.AddAnimal(animalModel)
 		if err != nil {
@@ -80,7 +78,7 @@ func UpdateAnimalHandler() fiber.Handler {
 		if err := c.BodyParser(&animal); err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
 		}
-		
+
 		if err := service.UpdateAnimal(id, animal); err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to update animal")
 		}
@@ -99,16 +97,64 @@ func DeleteAnimalHandler() fiber.Handler {
 		}
 
 		msg, err := service.DeleteAnimal(id)
-		
+
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"message": err.Error(),
-			})			
+			})
 		}
-		
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"message": msg,
 		})
+	}
+}
+
+//add dosage used in animal
+
+type DosageResponse struct {
+	ID                uuid.UUID `json:"id"`
+	AnimalID          uuid.UUID `json:"animal_id" validate:"required"`
+	MedicationID      uuid.UUID `json:"medication_id" validate:"required"`
+	StartDate         time.Time `json:"start_date" validate:"required"`
+	EndDate           time.Time `json:"end_date" validate:"required"`
+	Quantity          int       `json:"quantity" validate:"gte=0"`
+	Dosage            string    `json:"dosage" validate:"required"`
+	ConsultationID    uuid.UUID `json:"consultation_id"`
+	HospitalizationID uuid.UUID `json:"hospitalization_id"`
+}
+
+func AddDosageHandler(dosageService *service.DosageService) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var dosage DosageResponse
+		if err := c.BodyParser(&dosage); err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
+		}
+
+		// Create a new UUID for the dosage
+		dosageID := uuid.New()
+
+		// Convert the DosageResponse to Dosage
+		dosageModel := model.Dosage{
+			ID:                dosageID,
+			AnimalID:          dosage.AnimalID,
+			MedicationID:      dosage.MedicationID,
+			StartDate:         dosage.StartDate,
+			EndDate:           dosage.EndDate,
+			Quantity:          dosage.Quantity,
+			Dosage:            dosage.Dosage,
+			ConsultationID:    &dosage.ConsultationID,
+			HospitalizationID: &dosage.HospitalizationID,
+		}
+
+		// Call the service to add the dosage
+		err := dosageService.AddDosage(context.Background(), &dosageModel)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to add dosage transaction")
+		}
+
+		// Return the created dosage
+		dosage.ID = dosageID
+		return c.Status(fiber.StatusCreated).JSON(dosage)
 	}
 }
