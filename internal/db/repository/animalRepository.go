@@ -75,3 +75,12 @@ func (r  *AnimalRepository) FindByUniqueAttributes(animal model.Animal) (*model.
 	return &existingAnimal, nil
 }
 
+
+func (r *AnimalRepository) FindAllAnimals() ([]model.Animal, error) {
+	var animals []model.Animal
+	if err := r.Db.Find(&animals).Error; err != nil {
+		log.Print("Error finding animals:", err)
+		return nil, err
+	}
+	return animals, nil
+}

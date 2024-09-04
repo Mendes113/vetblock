@@ -87,3 +87,12 @@ func  DeleteAnimal(id uuid.UUID) (string, error) {
 //     hash.Write([]byte(data))
 //     return hex.EncodeToString(hash.Sum(nil))
 // }
+
+func GetAllAnimals() ([]model.Animal, error) {
+	repo := repository.NewAnimalRepository()
+	animals, err := repo.FindAllAnimals()
+	if err != nil {
+		return nil, err
+	}
+	return animals, nil
+}

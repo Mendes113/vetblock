@@ -9,10 +9,15 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
+	app.Post("/api/register", handlers.SignUp)
+	app.Post("/api/login", handlers.SignIn	)
+	//middleware
+	
 	protected := app.Group("/api/v1")
-
+	protected.Use(handlers.Auth)
 	// Rotas para Animais
 	protected.Post("/animals", handlers.AddAnimalHandler())
+	protected.Get("/animals", handlers.GetAllAnimalsHandler())
 	protected.Post("/animals/dosage", handlers.AddDosageHandler(
 		service.NewDosageService(
 		repository.NewDosageRepository(

@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 	"vetblock/internal/db/model"
-	"vetblock/internal/service"
+		"vetblock/internal/service"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -156,5 +156,17 @@ func AddDosageHandler(dosageService *service.DosageService) fiber.Handler {
 		// Return the created dosage
 		dosage.ID = dosageID
 		return c.Status(fiber.StatusCreated).JSON(dosage)
+	}
+}
+
+
+func GetAllAnimalsHandler() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		animals, err := service.GetAllAnimals()
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to get all animals")
+		}
+
+		return c.JSON(animals)
 	}
 }
