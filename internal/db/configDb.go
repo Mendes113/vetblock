@@ -2,11 +2,14 @@ package db
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"vetblock/internal/db/model"
 
+	"github.com/joho/godotenv"
+	supabase "github.com/lengzuo/supa"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-    supabase "github.com/lengzuo/supa"
 )
 
 func NewDb() *gorm.DB {
@@ -23,9 +26,20 @@ func NewDb() *gorm.DB {
 }
 
 func Supa() *supabase.Client{
+	// Carrega as variáveis de ambiente do arquivo .env
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Erro ao carregar o arquivo .env:", err)
+		return nil
+	}
+
+	log.Println("Initializing Supabase client")
+	log.Println("API Key:", os.Getenv("SUPA_API"))
+	log.Println("Project Ref:", os.Getenv("PROJECT_REF"))
+
 	conf := supabase.Config{
-		ApiKey:     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdjd3hrcHZ5aGtmaHVka2NueHlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjUzODA0NzQsImV4cCI6MjA0MDk1NjQ3NH0.AiD4dUBpAK34c83A0kstm2V4LKX7zajHTVqYo9cSHzg",
-		ProjectRef: "gcwxkpvyhkfhudkcnxya",
+		ApiKey:     os.Getenv("SUPA_API"),
+		ProjectRef: os.Getenv("PROJECT_REF"),
 		Debug:      true,
 	}
 

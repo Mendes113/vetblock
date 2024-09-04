@@ -41,10 +41,15 @@ func AddAnimalHandler() fiber.Handler {
 			Description: animal.Description,
 			CPFTutor:    animal.CPFTutor,
 		}
-
+		if err := service.ValidateAnimal(animalModel); err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+		}
 		err := service.AddAnimal(animalModel)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString("Failed to add animal transaction")
+			//show the error
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": err.Error(),
+			})
 		}
 
 		return c.Status(fiber.StatusCreated).JSON(animal)

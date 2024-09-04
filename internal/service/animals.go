@@ -13,20 +13,40 @@ import (
 )
 
 
+//animal needs at least a name and a species
+func ValidateAnimal(animal model.Animal) error {
+	if animal.Name == "" {
+		return errors.New("animal needs a name")
+	}
+	if animal.Species == "" {
+		return errors.New("animal needs a species")
+	}
+	return nil
+}
+
+//validate if animal already exists
+func ValidateAnimalExists(animal model.Animal) error {
+	repo := repository.NewAnimalRepository()
+	existingAnimal, err := repo.FindByUniqueAttributes(animal)
+	if err != nil {
+		return err
+	}
+	if existingAnimal != nil {
+		return errors.New("animal already exists")
+	}
+	return nil
+}
 
 
 func AddAnimal(animal model.Animal) error {
     log.Println("adding animal transaction")
 
     repo := repository.NewAnimalRepository()
-    existingAnimal, err := repo.FindByUniqueAttributes(animal)
-    if err != nil {
-        return err
-    }
-    if existingAnimal != nil {
-        return errors.New("animal já existe")
-    }
-    
+   
+	if err := ValidateAnimalExists(animal); err != nil {
+		return err
+	}
+
     if err := repo.SaveAnimal(&animal); err != nil {
         return err
     }

@@ -3,17 +3,14 @@ package main
 import (
 	"log"
 	"vetblock/internal/api"
-	"vetblock/internal/db"
+	
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	supaClient := db.Supa()
-	if supaClient == nil {
-		log.Fatal("Failed to initialize Supabase client")
-	}
+	
 	loadEnv()
 	// Inicializar o Fiber e as rotas
 	app := fiber.New()
