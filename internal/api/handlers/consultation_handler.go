@@ -12,18 +12,22 @@ import (
 // Defina o validador global
 var validate = validator.New()
 
-type ConsultationResponse struct {
+type ConsultationRequest struct {
     ID               uuid.UUID `json:"id"`
     AnimalID         uuid.UUID `json:"animal_id" validate:"required"`
     VeterinaryCRVM   string    `json:"crvm" validate:"required"`
     ConsultationDate string    `json:"consultation_date" validate:"required"`
     Reason           string    `json:"reason" validate:"required"`
+    Consultation_Type string    `json:"consultation_type"`
+    Consultation_Hour string    `json:"consultation_hour"`
+    Consultation_Prescription string    `json:"consultation_prescription"`
+    Consultation_Status string    `json:"consultation_status"`
     Observation      string    `json:"observation"`
 }
 
 func AddConsultationHandler() fiber.Handler {
     return func(c *fiber.Ctx) error {
-        var consultation ConsultationResponse
+        var consultation ConsultationRequest
         consultation.ID = uuid.New()
 
         // Parse o corpo da solicitação
@@ -57,6 +61,11 @@ func AddConsultationHandler() fiber.Handler {
             ConsultationDate: parsedDate,
             Reason:           consultation.Reason,
             Observation:      consultation.Observation,
+            ConsultationType: consultation.Consultation_Type,
+            ConsultationHour: consultation.Consultation_Hour,
+            ConsultationPrescription: consultation.Consultation_Prescription,
+            ConsultationStatus: consultation.Consultation_Status,
+            
         }
 
         err = service.AddConsultation(&consultationModel)
