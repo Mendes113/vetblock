@@ -1,12 +1,13 @@
 package handlers
 
 import (
-    "time"
-    "vetblock/internal/db/model"
-    "vetblock/internal/service"
-    "github.com/gofiber/fiber/v2"
-    "github.com/google/uuid"
-    "github.com/go-playground/validator/v10"
+	"time"
+	"vetblock/internal/db/model"
+	"vetblock/internal/service"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 // Defina o validador global
