@@ -5,15 +5,21 @@ import (
 	"strconv"
 )
 
+
+
 type Tutor struct {
+    User
     CPFTutor string `json:"cpf_tutor" gorm:"type:char(11);primary_key" validate:"required,len=11,cpf"`
     Name     string `json:"name" validate:"required,min=2,max=100"`
-    Email    string `json:"email" validate:"required,email"`
-    Phone    string `json:"phone" validate:"required,min=10,max=15"`
     Address  string `json:"address" validate:"required,min=5,max=255"`
-    Password string `json:"-" validate:"required,min=8"`
 }
 
+type Veterinarian struct {
+    User
+    CRMV     string `json:"crmv" gorm:"type:char(10);primary_key" validate:"required,len=10"`
+    Name     string `json:"name" validate:"required,min=2,max=100"`
+    Specialty string `json:"specialty" validate:"required,min=2,max=100"`
+}
 
 func NewTutor(cpf, name, email, phone, address, password string) (*Tutor, error) {
 
@@ -23,10 +29,7 @@ func NewTutor(cpf, name, email, phone, address, password string) (*Tutor, error)
 	return &Tutor{
 		CPFTutor: cpf,
 		Name: name,
-		Email: email,
-		Phone: phone,
 		Address: address,
-		Password: password,
 	},nil
 }
 
