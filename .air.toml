@@ -4,8 +4,15 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./server"  # O caminho para o binário que será gerado
-  cmd = "go build -o ./server ./cmd/server/main.go"  # Certifique-se de que está apontando para o arquivo main.go correto
+  # Aqui está a definição para o binário Unix-like (sem extensão .exe)
+  bin_unix = "./cmd/server"  # O caminho para o binário Unix-like
+  cmd_unix = "GOOS=linux go build -o ./cmd/server ./cmd/server/main.go"  # Certifique-se de que está apontando para o arquivo main.go correto
+
+  # Aqui está a definição para o binário Windows (.exe)
+  bin_windows = "./cmd/server.exe"  # O caminho para o binário Windows
+  cmd = "go build -o ./tmp/main.exe ./cmd/server/main.go"
+
+  
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []

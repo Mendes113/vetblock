@@ -11,6 +11,8 @@ import {
   ShoppingCart,
   Users,
 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDog,faNotesMedical, faCalendar } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect } from "react";
 import { Calendar } from "react-calendar"; // Importa o componente Calendar
 import "react-calendar/dist/Calendar.css"; // Importa o CSS do react-calendar
@@ -57,8 +59,9 @@ export function Dashboard() {
     };
   useEffect(() => {
     const fetchConsultations = async () => {
-      const response = await fetch("/api/consultations"); // Ajuste a URL conforme necessário
-      const data = await response.json();
+      // const response = await fetch("/api/consultations"); // Ajuste a URL conforme necessário
+      // const data = await response.json();
+      const data = [fakeAppointment];
       setConsultations(data);
     };
 
@@ -81,7 +84,7 @@ export function Dashboard() {
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Package2 className="h-6 w-6" />
+            <FontAwesomeIcon icon={faDog} />
               <span className="">Vetsys</span>
             </Link>
             <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
@@ -112,7 +115,7 @@ export function Dashboard() {
                 href="#"
                 className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
               >
-                <Package className="h-4 w-4" />
+                <FontAwesomeIcon icon={faNotesMedical} />
                 Products{" "}
               </Link>
               <Link
@@ -192,7 +195,7 @@ export function Dashboard() {
                   href="#"
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
-                  <Package className="h-5 w-5" />
+                  <FontAwesomeIcon icon={faNotesMedical} />
                   Products
                 </Link>
                 <Link
@@ -260,13 +263,14 @@ export function Dashboard() {
         <main className="flex-1 p-4">
           <div className="flex flex-col gap-4">
             <div className="w-full h-full">
-              <h2 className="text-xl font-semibold">Calendário</h2>
+              <h2 className="text-xl font-semibold">Calendário  <FontAwesomeIcon icon={faCalendar} className="ml-1"/></h2>
+               
               <Calendar
                 // onChange={setDate}
                 value={date}
                 className="mt-2 border p-4 rounded-lg max-h-full max-w-full w-full h-full"
               />
-
+             
             </div>
             <div>
             <NextAppointment appointment={fakeAppointment} />
