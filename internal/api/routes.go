@@ -6,23 +6,29 @@ import (
 	"vetblock/internal/service"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func SetupRoutes(app *fiber.App) {
 	app.Post("/api/register", handlers.SignUp)
-	app.Post("/api/login", handlers.SignIn	)
+	app.Post("/api/login", handlers.SignIn)
 	//middleware
-	
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*", // Replace with specific origins if needed
+		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+	}))
+
 	protected := app.Group("/api/v1")
-	protected.Use(handlers.Auth)
+	// protected.Use(handlers.Auth)
 	// Rotas para Animais
 	protected.Post("/animals", handlers.AddAnimalHandler())
 	protected.Get("/animals", handlers.GetAllAnimalsHandler())
 	protected.Post("/animals/dosage", handlers.AddDosageHandler(
 		service.NewDosageService(
-		repository.NewDosageRepository(
-			repository.GetDB(),
-		))))
+			repository.NewDosageRepository(
+				repository.GetDB(),
+			))))
 	// protected.Get("/animals/:id", handlers.GetAnimalByIDHandler())
 	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler())
 

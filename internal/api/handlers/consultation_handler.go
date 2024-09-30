@@ -71,3 +71,18 @@ func AddConsultationHandler() fiber.Handler {
     }
 }
 
+//get next vet(using crvm) consultation
+func GetNextConsultationHandler() fiber.Handler {
+    return func(c *fiber.Ctx) error {
+        crvm := c.Params("crvm")
+
+        consultation, err := service.GetNextConsultationByVeterinaryCRVM(crvm)
+        if err != nil {
+            return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+                "message": err.Error(),
+            })
+        }
+
+        return c.Status(fiber.StatusOK).JSON(consultation)
+    }
+}

@@ -147,3 +147,39 @@ func GetConsultationByAnimalIDAndDateRange(animalID uuid.UUID, startDate, endDat
 	repo := getConsultationRepo()
 	return repo.FindConsultationByAnimalIDAndDateRange(context.Background(), animalID, startDate, endDate)
 }
+
+//next vet consultation
+func GetNextConsultationByVeterinaryCRVM(crvm string) (*model.Consultation, error) {
+	repo := getConsultationRepo()
+	
+	consultations, err := repo.FindConsultationByVeterinaryCRVM(context.Background(), crvm)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(consultations) == 0 {
+		return nil, nil
+	}
+
+	// Encontre a próxima consulta
+	nextConsultation := consultations[0]
+	for _, consultation := range consultations {
+		if consultation.ConsultationDate.After(nextConsultation.ConsultationDate) {
+			nextConsultation = consultation
+		}
+	}
+
+	return &nextConsultation, nil
+}
+
+func GetConsultationByAnimalIDAndDate(animalID uuid.UUID, date string) (*model.Consultation, error) {
+	repo := getConsultationRepo()
+	consultations, err := repo.FindConsultationByAnimalIDAndDate(context.Background(), animalID, date)
+	if err != nil {
+		return nil, err
+	}
+	if len(consultations) == 0 {
+		return nil, nil
+	}
+	return &consultations[0], nil
+}

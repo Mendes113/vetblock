@@ -79,3 +79,12 @@ func (repo *ConsultationRepository) DeleteConsultation(ctx context.Context, id u
 	log.Print("Consultation Deleting Consultation")
 	return result.Error
 }
+
+
+//FindConsultationByAnimalIDAndDate
+func (repo *ConsultationRepository) FindConsultationByAnimalIDAndDate(ctx context.Context, animalID uuid.UUID, date string) ([]model.Consultation, error) {
+	var consultations []model.Consultation
+	result := repo.db.WithContext(ctx).Where("animal_id = ? AND consultation_date = ?", animalID, date).Find(&consultations)
+	return consultations, result.Error
+}
+
