@@ -23,6 +23,7 @@ type ConsultationRequest struct {
     Consultation_Prescription string    `json:"consultation_prescription"`
     Consultation_Status string    `json:"consultation_status"`
     Observation      string    `json:"observation"`
+    Consultation_Price float64    `json:"consultation_price"`
 }
 
 func AddConsultationHandler() fiber.Handler {
@@ -65,7 +66,8 @@ func AddConsultationHandler() fiber.Handler {
             ConsultationHour: consultation.Consultation_Hour,
             ConsultationPrescription: consultation.Consultation_Prescription,
             ConsultationStatus: consultation.Consultation_Status,
-            
+            ConsultationPrice: consultation.Consultation_Price,
+
         }
 
         err = service.AddConsultation(&consultationModel)
