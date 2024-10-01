@@ -4,6 +4,7 @@ import { Skeleton } from './components/ui/skeleton';
 import PatientModal from './components/patientModal/patientmodal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
+
 interface Consultation {
   id: string; // UUID pode ser tratado como uma string
   reason: string;
@@ -22,11 +23,10 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pacienteData, setPacienteData] = useState<any | null>(null); // Dados do paciente
   const [isLoading, setIsLoading] = useState(true); // Estado de carregamento
-  
+
   // Simulando a recuperação de dados do paciente assim que o componente for montado
   useEffect(() => {
     const fetchPacienteData = () => {
-      // Simulando um atraso na recuperação dos dados
       setTimeout(() => {
         const fakePaciente = {
           name: "Rex",
@@ -63,7 +63,7 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
   return (
     <div className="p-4 bg-white shadow-md rounded-lg border border-gray-300">
       <h2 className="text-lg font-semibold mb-2">Próximo Compromisso <FontAwesomeIcon icon={faCalendarCheck} /></h2>
-      <div className='flex gap-20 items-center justify-center mt-5'>
+      <div className="flex flex-col gap-4 items-center justify-center mt-5 sm:flex-row sm:gap-10">
         <p className="text-gray-700">
           <strong>Data:</strong> {new Date(date).toLocaleDateString()}
         </p>
@@ -79,7 +79,7 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
       <div className="mt-4">
         <h3 className="text-lg font-semibold mb-2">Paciente</h3>
         {/* card for patient */}
-        <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
+        <div className="flex flex-col items-center p-4 bg-gray-100 rounded-lg [w-1200]:flex-row sm:gap-4">
           {isLoading ? (
             <Skeleton className="w-24 h-24 rounded-full" />
           ) : (
@@ -89,22 +89,21 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
               className="w-24 h-24 rounded-full object-cover"
             />
           )}
-          <div className="w-20 h-20 bg-gray-300 rounded-full" />
 
-          <div className='flex gap-20 items-center text-center'>
-            <div className='justify-center'>
+          <div className='flex flex-col items-center text-center sm:flex-row sm:gap-8'>
+            <div className='flex flex-col items-center'>
               <p className="text-gray-700 font-bold">Nome do Paciente</p>
               {isLoading ? (
                 <Skeleton className="w-20 h-4 flex">
                   <div className="w-full h-full bg-gray-300 rounded"></div>
                 </Skeleton>
               ) : (
-                <p className="text-gray-700 w-20">{pacienteData?.name}</p>
+                <p className="text-gray-700">{pacienteData?.name}</p>
               )}
             </div>
 
-            <div className='justify-center'>
-              <p className="text-gray-700 font-bold" >Raça</p>
+            <div className='flex flex-col items-center'>
+              <p className="text-gray-700 font-bold">Raça</p>
               {isLoading ? (
                 <Skeleton className="w-20 h-4 flex">
                   <div className="w-full h-full bg-gray-300 rounded"></div>
@@ -114,7 +113,7 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
               )}
             </div>
 
-            <div className='justify-center'>
+            <div className='flex flex-col items-center'>
               <p className="text-gray-700 font-bold">Idade</p>
               {isLoading ? (
                 <Skeleton className="w-20 h-4 flex">
@@ -125,7 +124,7 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
               )}
             </div>
 
-            <div className='justify-center'>
+            <div className='flex flex-col items-center'>
               <p className="text-gray-700 font-bold">Peso</p>
               {isLoading ? (
                 <Skeleton className="w-20 h-4 flex">
@@ -136,7 +135,7 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
               )}
             </div>
 
-            <div className='justify-center'>
+            <div className='flex flex-col items-center'>
               <p className="text-gray-700 font-bold">Espécie</p>
               {isLoading ? (
                 <Skeleton className="w-20 h-4 flex">
@@ -146,16 +145,15 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
                 <p className="text-gray-700">{pacienteData?.species}</p>
               )}
             </div>
-            
-            <div className='pr-5'>
-            <Button className='flex ' onClick={openModal}>Ver Paciente</Button>
-            </div>
-           
-            
-            {isModalOpen && (
-              <PatientModal patient={pacienteData} loading={isLoading} onClose={closeModal} />
-            )}
           </div>
+
+          <div className='mt-4 sm:mt-0'>
+            <Button className='flex' onClick={openModal}>Ver Paciente</Button>
+          </div>
+
+          {isModalOpen && (
+            <PatientModal patient={pacienteData} loading={isLoading} onClose={closeModal} />
+          )}
         </div>
       </div>
     </div>
