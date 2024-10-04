@@ -2,14 +2,18 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 	"vetblock/internal/db/model"
-		"vetblock/internal/service"
+	"vetblock/internal/db/repository"
+	"vetblock/internal/service"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
+
+var animal_service = service.NewAnimalService(repository.NewAnimalRepository())
 
 type AnimalResponse struct {
 	ID          uuid.UUID `json:"id"`
@@ -44,7 +48,7 @@ func AddAnimalHandler() fiber.Handler {
 		if err := service.ValidateAnimal(animalModel); err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 		}
-		err := service.AddAnimal(animalModel)
+		err := animal_service.AddAnimal(animalModel)
 		if err != nil {
 			//show the error
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -84,7 +88,7 @@ func UpdateAnimalHandler() fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
 		}
 
-		if err := service.UpdateAnimal(id, animal); err != nil {
+		if err := animal_service.UpdateAnimal(id, animal); err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to update animal")
 		}
 
@@ -101,7 +105,7 @@ func DeleteAnimalHandler() fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
 		}
 
-		msg, err := service.DeleteAnimal(id)
+		msg, err := animal_service.DeleteAnimal(id)
 
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -152,8 +156,18 @@ func AddDosageHandler(dosageService *service.DosageService) fiber.Handler {
 			HospitalizationID: &dosage.HospitalizationID,
 		}
 
+		// Verifica se o animal existe
+		animal, err := animal_service.GetAnimalByID(dosage.AnimalID)
+		if err != nil {
+			return err
+		}
+
+		if animal == nil {
+			return errors.New("animal não encontrado")
+		}
+
 		// Call the service to add the dosage
-		err := dosageService.AddDosage(context.Background(), &dosageModel)
+		err = dosageService.AddDosage(context.Background(), &dosageModel)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to add dosage transaction")
 		}
@@ -164,14 +178,17 @@ func AddDosageHandler(dosageService *service.DosageService) fiber.Handler {
 	}
 }
 
-
 func GetAllAnimalsHandler() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		animals, err := service.GetAllAnimals()
+		// Check if context is nil (unlikely but possible in middleware scenarios)
+		if c == nil {
+			log.Println("fiber.Ctx is nil")
+			return fiber.ErrInternalServerError
+		}
+		animals, err := animal_service.GetAllAnimals()
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to get all animals")
 		}
-
 		return c.JSON(animals)
 	}
 }

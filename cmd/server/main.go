@@ -7,7 +7,19 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
+	"vetblock/internal/db/repository"
 )
+
+
+var animalRepo repository.AnimalRepositoryInterface
+func init() {
+	animalRepo = repository.NewAnimalRepository()
+
+    if animalRepo == nil {
+        log.Fatal("Failed to initialize animalRepo")
+    }
+}
+
 
 func main() {
 	
@@ -29,3 +41,4 @@ func loadEnv() {
 	}
 	log.Println("Environment variables loaded")
 }
+

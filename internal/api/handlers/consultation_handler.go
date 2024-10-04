@@ -82,7 +82,7 @@ func AddConsultationHandler(repo repository.ConsultationRepository) fiber.Handle
 
         // Função para buscar o animal pelo ID
         getAnimalByID := func(animalID uuid.UUID) (*model.Animal, error) {
-            animal, err := service.GetAnimalByID(animalID)
+            animal, err := animal_service.GetAnimalByID(animalID)
             if err != nil {
                 return nil, err
             }
