@@ -70,6 +70,11 @@ func (s *DosageService) AddDosage(ctx context.Context, dosage *model.Dosage) err
     return s.repo.Create(ctx, dosage, medication.ID, dosage.Quantity)
 }
 
+func GetConsultationByID(uUID uuid.UUID) (*model.Consultation, error) {
+    // Implement the function to return a consultation and an error
+    return nil, errors.New("unimplemented")
+}
+
 func GetHospitalizationByID(uUID uuid.UUID) {
 	panic("unimplemented")
 }

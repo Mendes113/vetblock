@@ -12,6 +12,11 @@ import (
 	"gorm.io/gorm"
 )
 
+
+func GetDB() *gorm.DB {
+	return NewDb()
+}
+
 func NewDb() *gorm.DB {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", "localhost", 5432, "vetblock", "vet113password", "vetblock")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

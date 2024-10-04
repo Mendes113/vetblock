@@ -3,6 +3,7 @@ package handlers
 import (
 	"time"
 	"vetblock/internal/db/model"
+	"vetblock/internal/db/repository"
 	"vetblock/internal/service"
 
 	"github.com/go-playground/validator/v10"
@@ -27,7 +28,7 @@ type ConsultationRequest struct {
     Consultation_Price float64    `json:"consultation_price"`
 }
 
-func AddConsultationHandler() fiber.Handler {
+func AddConsultationHandler(repo repository.ConsultationRepository) fiber.Handler {
     return func(c *fiber.Ctx) error {
         var consultation ConsultationRequest
         consultation.ID = uuid.New()
@@ -55,7 +56,7 @@ func AddConsultationHandler() fiber.Handler {
             return c.Status(fiber.StatusBadRequest).SendString("Invalid date format")
         }
 
-        // Converta o ConsultationResponse para Consultation
+        // Converta o ConsultationRequest para o modelo Consultation
         consultationModel := model.Consultation{
             ID:               consultation.ID,
             AnimalID:         consultation.AnimalID,
@@ -68,10 +69,28 @@ func AddConsultationHandler() fiber.Handler {
             ConsultationPrescription: consultation.Consultation_Prescription,
             ConsultationStatus: consultation.Consultation_Status,
             ConsultationPrice: consultation.Consultation_Price,
-
         }
-        
-        err = service.AddConsultation(&consultationModel)
+
+        // Função para buscar o veterinário pelo CRVM
+        getVeterinaryByCRVM := func(crvm string) (*model.Veterinary, error) {
+            vet, err := service.GetVeterinaryByCRVM(crvm)
+            if err != nil {
+                return nil, err
+            }
+            return vet, nil
+        }
+
+        // Função para buscar o animal pelo ID
+        getAnimalByID := func(animalID uuid.UUID) (*model.Animal, error) {
+            animal, err := service.GetAnimalByID(animalID)
+            if err != nil {
+                return nil, err
+            }
+            return animal, nil
+        }
+
+        // Chame a função AddConsultation com todos os parâmetros necessários
+        err = service.AddConsultation(repo, &consultationModel, getVeterinaryByCRVM, getAnimalByID)
         if err != nil {
             return c.Status(fiber.StatusInternalServerError).SendString("Failed to add consultation transaction")
         }
@@ -79,16 +98,16 @@ func AddConsultationHandler() fiber.Handler {
         return c.Status(fiber.StatusCreated).JSON(fiber.Map{
             "message": "Consulta adicionada com sucesso",
         })
-        
     }
 }
 
+
 //get next vet(using crvm) consultation
-func GetNextConsultationHandler() fiber.Handler {
+func GetNextConsultationHandler(repo repository.ConsultationRepository) fiber.Handler {
     return func(c *fiber.Ctx) error {
         crvm := c.Params("crvm")
 
-        consultation, err := service.GetNextConsultationByVeterinaryCRVM(crvm)
+        consultation, err := service.GetNextConsultationByVeterinaryCRVM(repo, crvm)
         if err != nil {
             return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
                 "message": err.Error(),

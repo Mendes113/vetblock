@@ -4,6 +4,7 @@ import (
     "github.com/google/uuid"
     "github.com/stretchr/testify/mock"
     "vetblock/internal/db/model"
+    
 )
 
 // MockAnimalRepository é o mock da interface AnimalRepositoryInterface

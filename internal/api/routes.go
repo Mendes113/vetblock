@@ -2,6 +2,7 @@ package api
 
 import (
 	"vetblock/internal/api/handlers"
+	"vetblock/internal/db" // Add this import
 	"vetblock/internal/db/repository"
 	"vetblock/internal/service"
 
@@ -33,8 +34,8 @@ func SetupRoutes(app *fiber.App) {
 	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler())
 
 	// Rotas para Consultas
-	protected.Post("/consultations", handlers.AddConsultationHandler())
-
+	app.Post("/consultations", handlers.AddConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
+	app.Get("/consultations/next-consultations", handlers.GetNextConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
 	// Rotas para Veterinários
 	protected.Post("/veterinaries", handlers.AddVeterinaryHandler())
 

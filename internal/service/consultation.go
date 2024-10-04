@@ -3,26 +3,15 @@ package service
 import (
 	"context"
 	"errors"
-	"log"
+	"time"
 	"vetblock/internal/db/model"
 	"vetblock/internal/db/repository"
 
 	"github.com/google/uuid"
 )
 
-// type ConsultationService struct{
-// 	repo repository.ConsultationRepository
-// }
-
-// Função para obter o repositório de consultas
-func getConsultationRepo() *repository.ConsultationRepository {
-	return repository.NewConsultationRepository(
-		repository.GetDB(),
-	)
-}
-
 // Função para verificar se a consulta já existe e retornar erro se necessário
-func checkConsultationExistence(repo *repository.ConsultationRepository, id uuid.UUID) (*model.Consultation, error) {
+func checkConsultationExistence(repo repository.ConsultationRepository, id uuid.UUID) (*model.Consultation, error) {
 	existingConsultation, err := repo.FindConsultationByID(context.Background(), id)
 	if err != nil {
 		return nil, err
@@ -33,15 +22,29 @@ func checkConsultationExistence(repo *repository.ConsultationRepository, id uuid
 	return existingConsultation, nil
 }
 
-func AddConsultation(consultation *model.Consultation) error {
-	repo := getConsultationRepo()
-	log.Print(consultation) // Você pode querer verificar o conteúdo aqui
-
+func AddConsultation(repo repository.ConsultationRepository, consultation *model.Consultation, getVetFunc func(string) (*model.Veterinary, error), getAnimalFunc func(uuid.UUID) (*model.Animal, error)) error {
 	// Verifique se a consulta já existe
 	existingConsultation, _ := repo.FindConsultationByID(context.Background(), consultation.ID)
-	
 	if existingConsultation != nil {
 		return errors.New("consulta já existe")
+	}
+
+	// Verifique se o veterinário existe
+	vet, err := getVetFunc(consultation.CRVM)
+	if err != nil {
+		return err
+	}
+	if vet == nil {
+		return errors.New("veterinário não encontrado")
+	}
+
+	// Verifique se o animal existe
+	animal, err := getAnimalFunc(consultation.AnimalID)
+	if err != nil {
+		return err
+	}
+	if animal == nil {
+		return errors.New("animal não encontrado")
 	}
 
 	// Salve a nova consulta
@@ -49,31 +52,10 @@ func AddConsultation(consultation *model.Consultation) error {
 		return err
 	}
 
-	// Verifique se o veterinário existe
-	vet, err := GetVeterinaryByCRVM(consultation.CRVM)
-	if err != nil {
-		return err
-	}
-
-	if vet == nil {
-		return errors.New("veterinário não encontrado")
-	}
-
-	// Verifique se o animal existe
-	animal, err := GetAnimalByID(consultation.AnimalID)
-	if err != nil {
-		return err
-	}
-
-	if animal == nil {
-		return errors.New("animal não encontrado")
-	}
-
 	return nil
 }
 
-func UpdateConsultation(id uuid.UUID, updatedConsultation *model.Consultation) error {
-	repo := getConsultationRepo()
+func UpdateConsultation(repo repository.ConsultationRepository, id uuid.UUID, updatedConsultation *model.Consultation) error {
 	consultation, err := checkConsultationExistence(repo, id)
 	if err != nil {
 		return err
@@ -95,8 +77,7 @@ func UpdateConsultation(id uuid.UUID, updatedConsultation *model.Consultation) e
 	return nil
 }
 
-func DeleteConsultation(id uuid.UUID) error {
-	repo := getConsultationRepo()
+func DeleteConsultation(repo repository.ConsultationRepository, id uuid.UUID) error {
 	consultation, err := checkConsultationExistence(repo, id)
 	if err != nil {
 		return err
@@ -108,78 +89,33 @@ func DeleteConsultation(id uuid.UUID) error {
 
 	return nil
 }
-
-// Adapte a função getConsultationBy para aceitar métodos com receiver de ponteiro
-func getConsultationBy(
-	findFunc func(ctx context.Context, id uuid.UUID) (*model.Consultation, error),
-	ctx context.Context,
-	id uuid.UUID,
-) (*model.Consultation, error) {
-	return findFunc(ctx, id)
-}
-
-func GetConsultationByID(id uuid.UUID) (*model.Consultation, error) {
-	repo := getConsultationRepo() // Crie uma instância do repositório
-	return getConsultationBy(repo.FindConsultationByID, context.Background(), id)
-}
-
-func GetConsultationByAnimalID(animalID uuid.UUID) ([]model.Consultation, error) {
-	repo := getConsultationRepo()
-	return repo.FindConsultationByAnimalID(context.Background(), animalID)
-}
-
-func GetConsultationByVeterinaryCRVM(crvm string) ([]model.Consultation, error) {
-	repo := getConsultationRepo()
-	return repo.FindConsultationByVeterinaryCRVM(context.Background(), crvm)
-}
-
-func GetConsultationByDate(date string) ([]model.Consultation, error) {
-	repo := getConsultationRepo()
-	return repo.FindConsultationByDate(context.Background(), date)
-}
-
-func GetConsultationByDateRange(startDate, endDate string) ([]model.Consultation, error) {
-	repo := getConsultationRepo()
-	return repo.FindConsultationByDateRange(context.Background(), startDate, endDate)
-}
-
-func GetConsultationByAnimalIDAndDateRange(animalID uuid.UUID, startDate, endDate string) ([]model.Consultation, error) {
-	repo := getConsultationRepo()
-	return repo.FindConsultationByAnimalIDAndDateRange(context.Background(), animalID, startDate, endDate)
-}
-
-//next vet consultation
-func GetNextConsultationByVeterinaryCRVM(crvm string) (*model.Consultation, error) {
-	repo := getConsultationRepo()
-	
+func GetNextConsultationByVeterinaryCRVM(repo repository.ConsultationRepository, crvm string) (*model.Consultation, error) {
 	consultations, err := repo.FindConsultationByVeterinaryCRVM(context.Background(), crvm)
 	if err != nil {
 		return nil, err
 	}
 
+	// Verifica se não há consultas
 	if len(consultations) == 0 {
-		return nil, nil
+		return nil, errors.New("nenhuma consulta encontrada")
 	}
 
-	// Encontre a próxima consulta
-	nextConsultation := consultations[0]
+	// Encontra a próxima consulta (a mais próxima da data atual)
+	var nextConsultation *model.Consultation
+	now := time.Now()
+
 	for _, consultation := range consultations {
-		if consultation.ConsultationDate.After(nextConsultation.ConsultationDate) {
-			nextConsultation = consultation
+		if consultation.ConsultationDate.After(now) {
+			if nextConsultation == nil || consultation.ConsultationDate.Before(nextConsultation.ConsultationDate) {
+				nextConsultation = &consultation
+			}
 		}
 	}
 
-	return &nextConsultation, nil
-}
+	// Se não houver consulta futura, retorna erro
+	if nextConsultation == nil {
+		return nil, errors.New("nenhuma consulta futura encontrada")
+	}
 
-func GetConsultationByAnimalIDAndDate(animalID uuid.UUID, date string) (*model.Consultation, error) {
-	repo := getConsultationRepo()
-	consultations, err := repo.FindConsultationByAnimalIDAndDate(context.Background(), animalID, date)
-	if err != nil {
-		return nil, err
-	}
-	if len(consultations) == 0 {
-		return nil, nil
-	}
-	return &consultations[0], nil
+	return nextConsultation, nil
 }
