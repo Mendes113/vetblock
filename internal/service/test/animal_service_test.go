@@ -147,38 +147,40 @@ func TestDeleteAnimal(t *testing.T) {
 	t.Run("should delete animal", func(t *testing.T) {
 		mockRepo := new(repository.MockAnimalRepository) // Fresh mock per test
 		animalService := service.NewAnimalService(mockRepo)
-
-		mockRepo.On("DeleteAnimal", animalID).Return("Animal excluído com sucesso", nil)
-
+	
+		mockRepo.On("DeleteAnimal", animalID).Return("Animal deleted successfully", nil) // English message
+	
 		msg, err := animalService.DeleteAnimal(animalID)
 		assert.NoError(t, err)
-		assert.Equal(t, "Animal excluído com sucesso", msg)
+		assert.Equal(t, "Animal deleted successfully", msg) // Adjusted to match service message
 		mockRepo.AssertExpectations(t)
 	})
+	
 
 	t.Run("should return error if deletion fails", func(t *testing.T) {
 		mockRepo := new(repository.MockAnimalRepository) // Fresh mock per test
 		animalService := service.NewAnimalService(mockRepo)
-
+	
 		mockRepo.On("DeleteAnimal", animalID).Return("", errors.New("delete failed"))
-
+	
 		msg, err := animalService.DeleteAnimal(animalID)
-		assert.EqualError(t, err, "delete failed")
+		assert.EqualError(t, err, "error deleting animal: delete failed") // Expect the full error message
 		assert.Empty(t, msg)
 		mockRepo.AssertExpectations(t)
 	})
-
+	
 	t.Run("should return error if animal not found", func(t *testing.T) {
 		mockRepo := new(repository.MockAnimalRepository) // Fresh mock per test
 		animalService := service.NewAnimalService(mockRepo)
-
+	
 		mockRepo.On("DeleteAnimal", animalID).Return("Animal not found", errors.New("animal not found"))
-
+	
 		msg, err := animalService.DeleteAnimal(animalID)
-		assert.EqualError(t, err, "animal not found")
+		assert.EqualError(t, err, "error deleting animal: animal not found") // Full error message
 		assert.Equal(t, "Animal not found", msg)
 		mockRepo.AssertExpectations(t)
 	})
+	
 }
 
 // Test for GetAllAnimals
