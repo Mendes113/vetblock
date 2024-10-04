@@ -70,7 +70,7 @@ func AddConsultationHandler() fiber.Handler {
             ConsultationPrice: consultation.Consultation_Price,
 
         }
-
+        
         err = service.AddConsultation(&consultationModel)
         if err != nil {
             return c.Status(fiber.StatusInternalServerError).SendString("Failed to add consultation transaction")

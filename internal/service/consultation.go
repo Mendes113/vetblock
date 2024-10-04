@@ -10,9 +10,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type ConsultationService struct{
-	repo repository.ConsultationRepository
-}
+// type ConsultationService struct{
+// 	repo repository.ConsultationRepository
+// }
 
 // Função para obter o repositório de consultas
 func getConsultationRepo() *repository.ConsultationRepository {

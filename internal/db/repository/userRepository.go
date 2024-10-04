@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"fmt"
 	"vetblock/internal/db/model"
+
 	"gorm.io/gorm"
 )
 
@@ -9,9 +11,15 @@ type UserRepository struct {
 	Db *gorm.DB
 }
 
-func (r *UserRepository) CreateUserTable() {
-	r.Db.AutoMigrate(&model.User{})
+// No arquivo internal/db/repository/userRepository.go
+func (r *AnimalRepository) InitMigrate() error {
+    err := r.Db.AutoMigrate(&model.User{})
+    if err != nil {
+        return fmt.Errorf("failed to auto migrate User: %w", err)
+    }
+    return nil
 }
+
 
 func (r *UserRepository) SaveUser(user *model.User) {
 	r.Db.Create(user)

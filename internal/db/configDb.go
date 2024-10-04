@@ -20,11 +20,11 @@ func NewDb() *gorm.DB {
 		panic("failed to connect database")
 	}
 
+	// Verifica o retorno de erro da migração
 	errMigrate := db.AutoMigrate(&model.User{}, &model.Animal{}, &model.Hospitalization{}, &model.Consultation{}, &model.ConsultationHistory{}, &model.Veterinary{}, &model.Medication{}, &model.Dosage{})
 	if errMigrate != nil {
-    log.Fatalf("failed to auto migrate: %v", err)
-}
-
+		log.Fatalf("failed to auto migrate: %v", errMigrate)
+	}
 
 	return db
 }
