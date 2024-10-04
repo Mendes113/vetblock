@@ -61,7 +61,7 @@ const NextAppointment: React.FC<{ appointment: Consultation | null }> = ({ appoi
   const { consultation_date: date, observation: description, consultation_hour } = appointment;
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg border border-gray-300">
+    <div className="p-4 bg-white shadow-md rounded-lg border border-gray-300 w-[900px] justify-center items-center ml-auto mr-auto">
       <h2 className="text-lg font-semibold mb-2">Próximo Compromisso <FontAwesomeIcon icon={faCalendarCheck} /></h2>
       <div className="flex flex-col gap-4 items-center justify-center mt-5 sm:flex-row sm:gap-10">
         <p className="text-gray-700">

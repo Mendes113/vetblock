@@ -1,11 +1,11 @@
 export function Dashboard() {
   return (
-    <div className="grid min-h-screen w-full grid-cols-1 md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="grid min-h-screen grid-cols-1 md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] xl:grid-cols-[300px_1fr] xl:max-w-[90%] 2xl:max-w-[80%] w-full mx-auto">
       {/* Sidebar e Header... */}
 
-      <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6 md:gap-6 lg:p-8">
+      <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6 md:gap-6 lg:p-8 xl:gap-8 xl:p-10">
         <div className="flex items-center">
-          <h1 className="text-xl font-semibold sm:text-2xl md:text-3xl">Appointments</h1>
+          <h1 className="text-xl font-semibold sm:text-2xl md:text-3xl xl:text-4xl">Appointments</h1>
         </div>
 
         <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
