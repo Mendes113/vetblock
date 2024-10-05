@@ -5,12 +5,13 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   # Aqui está a definição para o binário Unix-like (sem extensão .exe)
-  bin_unix = "./cmd/server"  # O caminho para o binário Unix-like
-  cmd_unix = "GOOS=linux go build -o ./cmd/server ./cmd/server/main.go"  # Certifique-se de que está apontando para o arquivo main.go correto
+ bin_unix = "./tmp/main"  # Saída do binário no diretório tmp
+ cmd_unix = "GOOS=linux go build -o ./tmp/main ./cmd/server/main.go"
 
-  # Aqui está a definição para o binário Windows (.exe)
-  bin_windows = "./cmd/server.exe"  # O caminho para o binário Windows
-  cmd = "go build -o ./tmp/main.exe ./cmd/server/main.go"
+
+  # # Aqui está a definição para o binário Windows (.exe)
+  # bin_windows = "./cmd/server.exe"  # O caminho para o binário Windows
+  # cmd = "go build -o ./tmp/main.exe ./cmd/server/main.go"
 
   
   delay = 1000
@@ -20,7 +21,7 @@ tmp_dir = "tmp"
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""
-  include_dir = [".", "internal"]  # Inclui o diretório internal para observação
+  include_dir = [".", "internal", "cmd"]  # Inclui o diretório internal para observação
   include_ext = ["go", "tpl", "tmpl", "html"]
   include_file = []
   kill_delay = "0s"
