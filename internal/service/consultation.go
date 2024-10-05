@@ -205,3 +205,23 @@ func GetNextConsultationByVeterinaryCRVM(repo repository.ConsultationRepository,
 	log.Printf("Próxima consulta encontrada: %v", nextConsultation)
 	return nextConsultation, nil
 }
+
+func GetAllConsultationsByVeterinary(repo repository.ConsultationRepository, crvm string) ([]model.Consultation, error) {
+	consultations, err := repo.FindConsultationByVeterinaryCRVM(context.Background(), crvm)
+	if err != nil {
+		log.Printf("Erro ao buscar consultas para o CRVM %s: %v", crvm, err)
+		return nil, err
+	}
+	log.Printf("Consultas encontradas para o CRVM %s: %v", crvm, consultations)
+	return consultations, nil
+}
+
+func GetConsultationsByAnimalID(repo repository.ConsultationRepository, animalID uuid.UUID) ([]model.Consultation, error) {
+	consultations, err := repo.FindConsultationByAnimalID(context.Background(), animalID)
+	if err != nil {
+		log.Printf("Erro ao buscar consultas para o animal ID %s: %v", animalID, err)
+		return nil, err
+	}
+	log.Printf("Consultas encontradas para o animal ID %s: %v", animalID, consultations)
+	return consultations, nil
+}

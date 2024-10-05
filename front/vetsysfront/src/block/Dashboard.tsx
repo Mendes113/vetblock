@@ -44,42 +44,79 @@ import Hospitalizations from "@/components/hospitalizations/hospitalizations";
 export const description =
   "A products dashboard with a sidebar navigation and a main content area. The dashboard has a header with a search input and a user menu. The sidebar has a logo, navigation links, and a card with a call to action. The main content area shows an empty state with a call to action.";
 
-export function Dashboard() {
-  const [date, setDate] = useState(new Date());
-  const [consultations, setConsultations] = useState<Consultation[]>([]);
-  const [appointment, setAppointment] = useState<Consultation | null>(null);
+  export function Dashboard() {
+    const [date, setDate] = useState(new Date());
+    const [consultations, setConsultations] = useState<Consultation[]>([]);
+    const [appointment, setAppointment] = useState<Consultation | null>(null);
+    const crvm = "56789"; // Você pode alterar este valor ou passá-lo dinamicamente
+  
+    // Definição do tipo Consultation
+    interface Patient {
+      animal_id: string;
+      id: string; // ID do paciente
+      name: string;
+      species: string;
+      breed: string;
+      age: number;
+      weight: number;
+      image: string | null; // URL da foto do paciente (pode ser nulo)
+      description: string;
+      photoUrl: string | null; // URL da foto do paciente (opcional)
+      lastConsultations: Consultation[]; // Últimas consultas
+      lastMedications: string[]; // Últimas medicações
+    }
+    
+    interface Consultation {
+      consultation_id: string;
+      animal_id: string;
+      crvm: string;
+      consultation_date: string;
+      consultation_hour: string;
+      observation: string;
+      reason: string;
+      consultation_type: string;
+      consultation_description: string;
+      consultation_prescription: string;
+      consultation_price: number;
+      consultation_status: string;
+    }
+  
+    useEffect(() => {
+      const fetchConsultations = async () => {
+        try {
+          const response = await fetch(`http://localhost:8081/api/v1/consultations/${crvm}`);
+          if (!response.ok) {
+            throw new Error("Erro ao buscar as consultas");
+          }
+          const dataConsult = await response.json();
+          console.log(dataConsult);
+          setConsultations(dataConsult);
+        } catch (error) {
+          console.error("Erro ao buscar dados:", error);
+        }
+      };
 
-  // Fake appointment data
-  const fakeAppointment = {
-    id: "1",
-    reason: "Consulta de rotina",
-    consultation_date: "2022-12-31",
-    veterinary_crvm: "123456",
-    consultation_hour: "08:00",
-    patient_id: "1",
-    observation: "Observação de teste",
-  };
+      const fetchNextAppointment = async () => {
+        try {
+          const response = await fetch(`http://localhost:8081/api/v1/veterinary/${crvm}/next-consultation`);
+          if (!response.ok) {
+            throw new Error("Erro ao buscar o próximo compromisso");
+          }
+          const dataAppointment = await response.json();
+          console.log(dataAppointment);
+          setAppointment(dataAppointment);
+        } catch (error) {
+          console.error("Erro ao buscar dados:", error);
+        }
+      }
 
-  useEffect(() => {
-    const fetchConsultations = async () => {
-      // Mock data, could be fetched from an API
-      const data = [fakeAppointment];
-      setConsultations(data);
-    };
-
-    fetchConsultations();
-  }, []);
-
-  type Consultation = {
-    id: string;
-    reason: string;
-    consultation_date: string;
-    veterinary_crvm: string;
-    consultation_hour: string;
-    patient_id: string;
-    observation: string;
-  };
-
+      
+      // fetchAnimal("12345");
+      fetchNextAppointment();
+      fetchConsultations();
+    }, [crvm]); // 'crvm' adicionado como dependência para garantir que a consulta aconteça se o valor de 'crvm' mudar
+  
+   
   return (
     <div className="min-h-screen flex flex-col">
       {/* TopBar stays fixed at the top */}
@@ -108,7 +145,7 @@ export function Dashboard() {
 
             {/* Next Appointment */}
             <div>
-              <NextAppointment appointment={fakeAppointment} />
+              <NextAppointment appointment={appointment} />
             </div>
 
             {/* hospitalization */}

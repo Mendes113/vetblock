@@ -198,3 +198,22 @@ func GetAllAnimalsHandler() fiber.Handler {
 		return c.JSON(animals)
 	}
 }
+
+func GetAnimalByIDHandler() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id, err := uuid.Parse(c.Params("id"))
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+		}
+
+		animal, err := animal_service.GetAnimalByID(id)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to get animal")
+		}
+		if animal == nil {
+			return c.Status(fiber.StatusNotFound).SendString("Animal not found")
+		}
+
+		return c.JSON(animal)
+	}
+}

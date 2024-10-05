@@ -107,7 +107,20 @@ func AddConsultationHandler(repo repository.ConsultationRepository) fiber.Handle
     }
 }
 
+//all consultations by vet 
+func GetAllConsultationsByVeterinaryHandler(repo repository.ConsultationRepository) fiber.Handler {
+    return func(c *fiber.Ctx) error {
+        crvm := c.Params("crvm")
+        consultations, err := service.GetAllConsultationsByVeterinary(repo, crvm)
+        if err != nil {
+            return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+                "message": err.Error(),
+            })
+        }
 
+        return c.Status(fiber.StatusOK).JSON(consultations)
+    }
+}
 
 //get next vet(using crvm) consultation
 func GetNextConsultationHandler(repo repository.ConsultationRepository) fiber.Handler {
@@ -122,5 +135,23 @@ func GetNextConsultationHandler(repo repository.ConsultationRepository) fiber.Ha
         }
 
         return c.Status(fiber.StatusOK).JSON(consultation)
+    }
+}
+
+func GetConsultsByAnimalIDHandler(repo repository.ConsultationRepository) fiber.Handler {
+    return func(c *fiber.Ctx) error {
+        animalID, err := uuid.Parse(c.Params("animal_id"))
+        if err != nil {
+            return c.Status(fiber.StatusBadRequest).SendString("Invalid ID format")
+        }
+
+        consultations, err := service.GetConsultationsByAnimalID(repo, animalID)
+        if err != nil {
+            return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+                "message": err.Error(),
+            })
+        }
+
+        return c.Status(fiber.StatusOK).JSON(consultations)
     }
 }

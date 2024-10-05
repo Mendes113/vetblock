@@ -25,6 +25,7 @@ func SetupRoutes(app *fiber.App) {
 	// Rotas para Animais
 	protected.Post("/animals", handlers.AddAnimalHandler())
 	protected.Get("/animals", handlers.GetAllAnimalsHandler())
+	protected.Get("/animals/:id", handlers.GetAnimalByIDHandler())
 	protected.Post("/animals/dosage", handlers.AddDosageHandler(
 		service.NewDosageService(
 			repository.NewDosageRepository(
@@ -37,7 +38,9 @@ func SetupRoutes(app *fiber.App) {
 	protected.Post("/consultations", handlers.AddConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
 	protected.Get("/veterinary/:crvm/next-consultation", handlers.GetNextConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
 	// Rotas para Veterinários
+	protected.Get("/consultations/:crvm", handlers.GetAllConsultationsByVeterinaryHandler(repository.NewConsultationRepository(db.GetDB())))
 	protected.Post("/veterinaries", handlers.AddVeterinaryHandler())
+	protected.Get("/consultations/patient/:animal_id", handlers.GetConsultsByAnimalIDHandler(repository.NewConsultationRepository(db.GetDB())))
 
 	// Rotas para Medicamentos
 	protected.Post("/medications", handlers.AddMedicationHandler())

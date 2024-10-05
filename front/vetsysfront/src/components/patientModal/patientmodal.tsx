@@ -1,33 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton"; // Importe o componente Skeleton
+import { Patient, Consultation } from '../../Types';
 
-type Patient = {
-  id: string;
-  name: string;
-  species: string;
-  breed: string;
-  age: string;
-  weight: string;
-  description: string;
-  photoUrl: string; // URL da foto do paciente
-  lastConsultations: Consultation[]; // Últimas consultas
-  lastMedications: string[]; // Últimas medicações
-};
 
-type Consultation = {
-  id: string;
-  date: string; // Data da consulta
-  reason: string; // Motivo da consulta
-};
+
+
+
+
+
+
+
+
 
 type ModalPacienteProps = {
   patient: Patient | null;
   loading: boolean; // Adicione a propriedade de carregamento
   onClose: () => void;
 };
+
+
+
+
 const PatientModal: React.FC<ModalPacienteProps> = ({ patient, loading, onClose }) => {
+  
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-4 sm:p-2 rounded-lg shadow-lg max-w-md w-full sm:max-w-sm ">
@@ -73,8 +72,8 @@ const PatientModal: React.FC<ModalPacienteProps> = ({ patient, loading, onClose 
                       {patient && patient.lastConsultations && patient.lastConsultations.length ? (
                         <>
                           {patient.lastConsultations.map((consultation) => (
-                            <li key={consultation.id} className="text-sm sm:text-xs">
-                              {new Date(consultation.date).toLocaleDateString()}: {consultation.reason}
+                            <li key={consultation.consultation_id} className="text-sm sm:text-xs">
+                              {new Date(consultation.consultation_date).toLocaleDateString()}: {consultation.reason}
                             </li>
                           ))}
                           <Button className="mt-2 sm:mt-1 text-sm sm:text-xs" onClick={onClose}>Acessar Consultas</Button>
