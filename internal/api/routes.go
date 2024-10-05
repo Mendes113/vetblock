@@ -34,8 +34,8 @@ func SetupRoutes(app *fiber.App) {
 	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler())
 
 	// Rotas para Consultas
-	app.Post("/consultations", handlers.AddConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
-	app.Get("/consultations/next-consultations", handlers.GetNextConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
+	protected.Post("/consultations", handlers.AddConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
+	protected.Get("/veterinary/:crvm/next-consultation", handlers.GetNextConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
 	// Rotas para Veterinários
 	protected.Post("/veterinaries", handlers.AddVeterinaryHandler())
 

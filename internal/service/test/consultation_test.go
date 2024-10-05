@@ -100,16 +100,30 @@ func TestAddConsultation(t *testing.T) {
 			ID:               uuid.New(),
 			AnimalID:         uuid.New(),
 			CRVM:             "valid-crvm",
-			ConsultationDate: time.Now(),
+			ConsultationDate: model.CustomDate{Time: time.Now()},
+			ConsultationHour: "14:30",  // Definindo a hora da consulta
 		}
-
+	
+		// Mock: Nenhuma consulta existente com esse ID
 		mockRepo.On("FindConsultationByID", mock.Anything, consultation.ID).Return(nil, nil)
+		
+		// Mock: Retornar nenhuma consulta conflitante no mesmo dia
+		mockRepo.On("FindConsultationByDate", mock.Anything, consultation.ConsultationDate.String()).Return([]model.Consultation{}, nil)
+	
+		// Mock: Salvar a consulta com sucesso
 		mockRepo.On("SaveConsultation", mock.Anything, consultation).Return(nil)
-
+	
+		// Chamada do serviço para adicionar a consulta
 		err := service.AddConsultation(mockRepo, consultation, MockGetVeterinaryByCRVM, MockGetAnimalByID)
+	
+		// Verificar que nenhum erro foi retornado
 		assert.NoError(t, err)
+	
+		// Verificar que as expectativas do mock foram cumpridas
 		mockRepo.AssertExpectations(t)
 	})
+	
+	
 
 	// Cenário onde a consulta já existe
 	t.Run("Consulta já existe", func(t *testing.T) {
@@ -151,12 +165,12 @@ func TestGetNextConsultationByVeterinaryCRVM(t *testing.T) {
 	consultation1 := model.Consultation{
 		ID:               uuid1, // UUID da consulta 1
 		CRVM:             crvm,
-		ConsultationDate: time.Now().Add(24 * time.Hour), // Amanhã
+		ConsultationDate: model.CustomDate{Time: time.Now().Add(24 * time.Hour)}, // Amanhã
 	}
 	consultation2 := model.Consultation{
 		ID:               uuid2, // UUID da consulta 2
 		CRVM:             crvm,
-		ConsultationDate: time.Now().Add(48 * time.Hour), // Dois dias depois
+		ConsultationDate:  model.CustomDate{Time:time.Now().Add(48 * time.Hour)}, // Dois dias depois
 	}
 
 	t.Run("Próxima consulta encontrada com sucesso", func(t *testing.T) {
@@ -213,7 +227,7 @@ func TestUpdateConsultation(t *testing.T) {
 	updatedConsultation := &model.Consultation{
 		AnimalID:               uuid.New(),
 		CRVM:                   "valid-crvm",
-		ConsultationDate:       time.Now().Add(24 * time.Hour),
+		ConsultationDate:        model.CustomDate{Time:time.Now().Add(24 * time.Hour)},
 		ConsultationDescription: "Updated description",
 		ConsultationType:       "Check-up",
 		ConsultationPrescription: "Updated prescription",
@@ -224,7 +238,7 @@ func TestUpdateConsultation(t *testing.T) {
 		ID:                     id,
 		AnimalID:               uuid.New(),
 		CRVM:                   "valid-crvm",
-		ConsultationDate:       time.Now(),
+		ConsultationDate:        model.CustomDate{Time:time.Now()},
 		ConsultationDescription: "Old description",
 		ConsultationType:       "Consultation",
 		ConsultationPrescription: "Old prescription",
@@ -278,7 +292,7 @@ func TestDeleteConsultation(t *testing.T) {
 		ID:                     id,
 		AnimalID:               uuid.New(),
 		CRVM:                   "valid-crvm",
-		ConsultationDate:       time.Now(),
+		ConsultationDate:        model.CustomDate{Time:time.Now()},
 		ConsultationDescription: "Some description",
 		ConsultationType:       "Consultation",
 		ConsultationPrescription: "Some prescription",

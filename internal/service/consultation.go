@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 	"vetblock/internal/db/model"
 	"vetblock/internal/db/repository"
@@ -20,6 +21,51 @@ func checkConsultationExistence(repo repository.ConsultationRepository, id uuid.
 		return nil, errors.New("consulta não encontrada")
 	}
 	return existingConsultation, nil
+}
+
+
+func findConflictingConsultations(repo repository.ConsultationRepository, consultation *model.Consultation) ([]model.Consultation, error) {
+	log.Print("Finding conflicting consultations")
+	
+	// Formato de data e hora utilizado
+	const dateTimeLayout = "2006-01-02 15:04"
+
+	// Combina a data e a hora da nova consulta (conversão de string para time.Time)
+	consultationDateTimeStr := consultation.ConsultationDate.Format("2006-01-02") + " " + consultation.ConsultationHour
+	consultationDateTime, err := time.Parse(dateTimeLayout, consultationDateTimeStr)
+	if err != nil {
+		return nil, err
+	}
+
+	// Busque consultas pela data
+	consultationDateStr := consultation.ConsultationDate.Format("2006-01-02")
+	consultations, err := repo.FindConsultationByDate(context.Background(), consultationDateStr)
+	if err != nil {
+		return nil, err
+	}
+
+	var conflictingConsultations []model.Consultation
+	for _, c := range consultations {
+		// Verifique se a consulta é diferente da que está sendo adicionada
+		if c.ID != consultation.ID {
+			// Combina a data e a hora da consulta existente (conversão de string para time.Time)
+			existingConsultationDateTimeStr := c.ConsultationDate.Format("2006-01-02") + " " + c.ConsultationHour
+			existingConsultationDateTime, err := time.Parse(dateTimeLayout, existingConsultationDateTimeStr)
+			if err != nil {
+				return nil, err
+			}
+
+			// Calcula a diferença de tempo entre as consultas em minutos
+			diff := consultationDateTime.Sub(existingConsultationDateTime).Minutes()
+
+			// Verifica se a diferença é menor que 15 minutos (ou seja, há um conflito)
+			if diff < 15 && diff > -15 {
+				conflictingConsultations = append(conflictingConsultations, c)
+			}
+		}
+	}
+	log.Print("Found conflicting consultations:", conflictingConsultations)
+	return conflictingConsultations, nil
 }
 
 func AddConsultation(repo repository.ConsultationRepository, consultation *model.Consultation, getVetFunc func(string) (*model.Veterinary, error), getAnimalFunc func(uuid.UUID) (*model.Animal, error)) error {
@@ -47,6 +93,15 @@ func AddConsultation(repo repository.ConsultationRepository, consultation *model
 		return errors.New("animal não encontrado")
 	}
 
+	// Verifique conflitos de horário
+	conflictingConsultations, err := findConflictingConsultations(repo, consultation)
+	if err != nil {
+		return err
+	}
+	if len(conflictingConsultations) > 0 {
+		return errors.New("já existe uma consulta no mesmo horário")
+	}
+
 	// Salve a nova consulta
 	if err := repo.SaveConsultation(context.Background(), consultation); err != nil {
 		return err
@@ -54,6 +109,7 @@ func AddConsultation(repo repository.ConsultationRepository, consultation *model
 
 	return nil
 }
+
 
 func UpdateConsultation(repo repository.ConsultationRepository, id uuid.UUID, updatedConsultation *model.Consultation) error {
 	consultation, err := checkConsultationExistence(repo, id)
@@ -90,32 +146,62 @@ func DeleteConsultation(repo repository.ConsultationRepository, id uuid.UUID) er
 	return nil
 }
 func GetNextConsultationByVeterinaryCRVM(repo repository.ConsultationRepository, crvm string) (*model.Consultation, error) {
+	// Busca todas as consultas relacionadas ao CRVM do veterinário
 	consultations, err := repo.FindConsultationByVeterinaryCRVM(context.Background(), crvm)
 	if err != nil {
+		log.Printf("Erro ao buscar consultas para o CRVM %s: %v", crvm, err)
 		return nil, err
 	}
+	log.Printf("Consultas encontradas para o CRVM %s: %v", crvm, consultations)
 
 	// Verifica se não há consultas
 	if len(consultations) == 0 {
+		log.Printf("Nenhuma consulta encontrada para o CRVM %s", crvm)
 		return nil, errors.New("nenhuma consulta encontrada")
 	}
 
-	// Encontra a próxima consulta (a mais próxima da data atual)
-	var nextConsultation *model.Consultation
-	now := time.Now()
+	// Data e hora atual em UTC
+	now := time.Now().UTC()
+	log.Printf("Data e hora atuais (UTC): %v", now)
 
+	var nextConsultation *model.Consultation
+
+	// Itera pelas consultas encontradas
 	for _, consultation := range consultations {
-		if consultation.ConsultationDate.After(now) {
-			if nextConsultation == nil || consultation.ConsultationDate.Before(nextConsultation.ConsultationDate) {
-				nextConsultation = &consultation
+		// Construa a data e hora da consulta completa
+		consultationDateTime := consultation.ConsultationDate.UTC()
+		if consultation.ConsultationHour != "" {
+			consultationDateTime, err = time.Parse("2006-01-02 15:04", consultation.ConsultationDate.Format("2006-01-02")+" "+consultation.ConsultationHour)
+			if err != nil {
+				log.Printf("Erro ao interpretar data e hora da consulta: %v", err)
+				return nil, errors.New("erro ao interpretar data e hora da consulta")
 			}
+			consultationDateTime = consultationDateTime.UTC()
+		}
+		log.Printf("Data e hora da consulta (UTC): %v", consultationDateTime)
+
+		// Verifica se a consulta é após a data e hora atuais
+		if consultationDateTime.After(now) {
+			log.Printf("Consulta futura encontrada: %v", consultationDateTime)
+
+			// Se ainda não temos uma próxima consulta ou a consulta atual for mais próxima
+			if nextConsultation == nil || consultationDateTime.Before(nextConsultation.ConsultationDate.UTC()) {
+				log.Printf("Atualizando próxima consulta para: %v", consultationDateTime)
+				// Atualiza a próxima consulta
+				nextConsultation = &consultation
+				nextConsultation.ConsultationDate = model.CustomDate{consultationDateTime}
+			}
+		} else {
+			log.Printf("Consulta anterior ou no mesmo horário que o atual: %v", consultationDateTime)
 		}
 	}
 
 	// Se não houver consulta futura, retorna erro
 	if nextConsultation == nil {
+		log.Printf("Nenhuma consulta futura encontrada para o CRVM %s", crvm)
 		return nil, errors.New("nenhuma consulta futura encontrada")
 	}
 
+	log.Printf("Próxima consulta encontrada: %v", nextConsultation)
 	return nextConsultation, nil
 }

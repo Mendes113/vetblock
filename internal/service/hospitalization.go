@@ -41,8 +41,8 @@ func ValidateHospitalization(hospitalization model.Hospitalization) error {
 	}{
 		{hospitalization.ID == uuid.UUID{}, ErrInvalidHospitalizationID},
 		{hospitalization.PatientID == uuid.UUID{}, ErrInvalidPatientID},
-		{hospitalization.StartDate == time.Time{}, ErrInvalidStartDate},
-		{hospitalization.EndDate == time.Time{}, ErrInvalidEndDate},
+		{hospitalization.StartDate == model.CustomDate{}, ErrInvalidStartDate},
+		{hospitalization.EndDate == model.CustomDate{}, ErrInvalidEndDate},
 		{hospitalization.Reason == "", ErrInvalidReason},
 		{hospitalization.CRVM == 0, ErrInvalidDoctorID},
 		{len(hospitalization.Medications) == 0, ErrInvalidMedications},

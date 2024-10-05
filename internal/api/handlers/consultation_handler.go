@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"log"
 	"time"
 	"vetblock/internal/db/model"
 	"vetblock/internal/db/repository"
@@ -50,10 +52,14 @@ func AddConsultationHandler(repo repository.ConsultationRepository) fiber.Handle
             })
         }
 
-        // Valide o formato da data
         parsedDate, err := time.Parse("2006-01-02", consultation.ConsultationDate)
-        if err != nil {
-            return c.Status(fiber.StatusBadRequest).SendString("Invalid date format")
+
+        // Valide o formato da hora (se fornecido)
+        if consultation.Consultation_Hour != "" {
+            _, err := time.Parse("15:04", consultation.Consultation_Hour)
+            if err != nil {
+                return c.Status(fiber.StatusBadRequest).SendString("Invalid time format")
+            }
         }
 
         // Converta o ConsultationRequest para o modelo Consultation
@@ -61,14 +67,14 @@ func AddConsultationHandler(repo repository.ConsultationRepository) fiber.Handle
             ID:               consultation.ID,
             AnimalID:         consultation.AnimalID,
             CRVM:             consultation.VeterinaryCRVM,
-            ConsultationDate: parsedDate,
+            ConsultationDate: model.CustomDate{Time: parsedDate},
             Reason:           consultation.Reason,
             Observation:      consultation.Observation,
             ConsultationType: consultation.Consultation_Type,
             ConsultationHour: consultation.Consultation_Hour,
             ConsultationPrescription: consultation.Consultation_Prescription,
-            ConsultationStatus: consultation.Consultation_Status,
-            ConsultationPrice: consultation.Consultation_Price,
+            ConsultationStatus:     consultation.Consultation_Status,
+            ConsultationPrice:      consultation.Consultation_Price,
         }
 
         // Função para buscar o veterinário pelo CRVM
@@ -96,17 +102,18 @@ func AddConsultationHandler(repo repository.ConsultationRepository) fiber.Handle
         }
 
         return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-            "message": "Consulta adicionada com sucesso",
+            "message": fmt.Sprintf("Consulta adicionada com sucesso para o dia %s às %s.", consultation.ConsultationDate, consultation.Consultation_Hour),
         })
     }
 }
+
 
 
 //get next vet(using crvm) consultation
 func GetNextConsultationHandler(repo repository.ConsultationRepository) fiber.Handler {
     return func(c *fiber.Ctx) error {
         crvm := c.Params("crvm")
-
+        log.Println("CRVM: ", crvm)
         consultation, err := service.GetNextConsultationByVeterinaryCRVM(repo, crvm)
         if err != nil {
             return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
