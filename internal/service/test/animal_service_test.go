@@ -2,6 +2,7 @@ package service_test
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 	"vetblock/internal/db/model"
 	"vetblock/internal/db/repository"
@@ -77,14 +78,16 @@ func TestGetAnimalByID(t *testing.T) {
 	t.Run("should return error if animal not found", func(t *testing.T) {
 		mockRepo := new(repository.MockAnimalRepository) // Fresh mock per test
 		animalService := service.NewAnimalService(mockRepo)
-
+	
 		mockRepo.On("FindAnimalByID", animalID).Return(nil, errors.New("animal not found"))
-
+	
 		result, err := animalService.GetAnimalByID(animalID)
 		assert.Nil(t, result)
-		assert.EqualError(t, err, "error fetching animal by ID: animal not found")
+		// Use fmt.Sprintf to insert animalID into the error message
+		assert.EqualError(t, err, fmt.Sprintf("animal with ID %s not found", animalID))
 		mockRepo.AssertExpectations(t)
 	})
+	
 }
 
 // Test for UpdateAnimal
