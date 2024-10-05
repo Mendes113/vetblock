@@ -5,8 +5,8 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   # Aqui está a definição para o binário Unix-like (sem extensão .exe)
- bin_unix = "./tmp/main"  # Saída do binário no diretório tmp
- cmd_unix = "GOOS=linux go build -o ./tmp/main ./cmd/server/main.go"
+ bin = "./tmp/main"  # Saída do binário no diretório tmp
+ cmd = "go build -o ./tmp/main ./cmd/server/main.go"
 
 
   # # Aqui está a definição para o binário Windows (.exe)
