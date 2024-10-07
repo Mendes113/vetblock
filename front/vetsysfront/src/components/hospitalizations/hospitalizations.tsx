@@ -131,73 +131,88 @@ const Hospitalizations: React.FC = () => {
     setSelectedPatient(null);
   };
 
-  const openModaMedication = (patient: Patient) => {
+  const openModalMedication = (patient: Patient) => {
     setIsAddMedicationModalOpen(true);
     setSelectedPatient(patient);
   }
 
+  return (
+    <div className="p-6 bg-gray-50 shadow-lg rounded-xl border border-gray-200 mx-auto max-w-7xl">
+      <h2 className="text-2xl font-bold mb-8 text-gray-800 text-center">Pacientes Internados</h2>
 
-return (
-  <div className="p-6 bg-gray-50 shadow-lg rounded-xl border border-gray-200 items-center justify-center mx-auto">
-    <h2 className="text-xl font-semibold mb-6 text-gray-800">Pacientes Internados</h2>
-    <div className='ml-0 mr-0 flex justify-center pb-2'>
-      <Chart />
-    </div>
-    
-    <Carousel className="w-full max-w-3xl mx-auto">
-      <CarouselContent className="flex -ml-1">
-        {patients.map((patient) => (
-          <CarouselItem key={patient.id} className="pl-1 w-1/3">
-            <div className="p-2">
-              <Card className="transition-shadow hover:shadow-md rounded-lg">
-                <CardContent className="p-6 bg-white rounded-lg shadow-sm">
-                  {isLoading ? (
-                    <Skeleton className="w-24 h-24 rounded-full" />
-                  ) : (
-                    <img
-                      src={patient.photoUrl}
-                      alt={`Foto de ${patient.name}`}
-                      className="w-24 h-24 rounded-full object-cover mx-auto transition-transform hover:scale-105"
-                    />
-                  )}
-                  <div className="text-center mt-4">
-                    <h3 className="text-lg font-bold text-gray-900">{patient.name}</h3>
-                    <p className="text-sm text-gray-600">Idade: {patient.age}</p>
-                    <p className="text-sm text-gray-600">Tempo Internado: 2 dias</p>
-                    <p className="text-sm text-gray-600">Última Medicação: {patient.lastMedications[0]}</p>
-                    <p className="text-sm text-gray-600">Próxima Medicação: 12h</p>
-                    <div className='gap-2'>
-                      <Button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mr-2" onClick={() => openModal(patient)}>
-                        Ver Detalhes
-                      </Button>
-                      <Button className="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onClick={() => openModaMedication(patient)}>
-                        Adicionar Medicação
-                      </Button>
+      {/* Gráfico */}
+      <div className='mb-8 flex justify-center'>
+        <Chart />
+      </div>
+
+      {/* Carrossel mostrando 2 pacientes por vez */}
+      <Carousel className="w-full max-w-5xl mx-auto">
+        <CarouselContent className="flex -ml-2 w-[500px]">
+          {patients.map((patient) => (
+            <CarouselItem key={patient.id} className="pl-2 w-full sm:w-1/2"> {/* w-full para telas pequenas, w-1/2 para maiores */}
+              <div className="p-3">
+                <Card className="transition-all hover:shadow-xl rounded-lg hover:-translate-y-2">
+                  <CardContent className="p-6 bg-white rounded-lg shadow-sm">
+                    {/* Foto do Paciente */}
+                    {isLoading ? (
+                      <Skeleton className="w-20 h-20 rounded-full" />
+                    ) : (
+                      <img
+                        src={patient.photoUrl}
+                        alt={`Foto de ${patient.name}`}
+                        className="w-20 h-20 rounded-full object-cover mx-auto transition-transform duration-300 hover:scale-105"
+                      />
+                    )}
+
+                    {/* Informações do Paciente */}
+                    <div className="text-center mt-4">
+                      <h3 className="text-lg font-bold text-gray-800">{patient.name}</h3>
+                      <p className="text-sm text-gray-600">Idade: {patient.age}</p>
+                      <p className="text-sm text-gray-600">Tempo Internado: 2 dias</p>
+                      <p className="text-sm text-gray-600">Última Medicação: {patient.lastMedications[0]}</p>
+                      <p className="text-sm text-gray-600">Próxima Medicação: 12h</p>
+
+                      {/* Botões de Ação */}
+                      <div className="flex justify-center gap-4 mt-4">
+                        <Button 
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" 
+                          onClick={() => openModal(patient)}
+                        >
+                          Ver Detalhes
+                        </Button>
+                        <Button 
+                          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" 
+                          onClick={() => openModalMedication(patient)}
+                        >
+                          Adicionar Medicação
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
+                  </CardContent>
+                </Card>
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
-    {isModalOpen && selectedPatient && (
-      <PatientModal patient={selectedPatient} loading={isLoading} onClose={closeModal} />
-    )}
+        <CarouselPrevious className="text-gray-500 hover:text-gray-700" />
+        <CarouselNext className="text-gray-500 hover:text-gray-700" />
+      </Carousel>
 
-    {isAddMedicationModalOpen && selectedPatient && (
-      <AddMedicationCard
-        onClose={() => setIsAddMedicationModalOpen(false)}
-        onAddMedication={handleAddMedication}
-        patient={selectedPatient}
-      />
-    )}
-  </div>
-);
+      {/* Modais */}
+      {isModalOpen && selectedPatient && (
+        <PatientModal patient={selectedPatient} loading={isLoading} onClose={closeModal} />
+      )}
+
+      {isAddMedicationModalOpen && selectedPatient && (
+        <AddMedicationCard
+          onClose={() => setIsAddMedicationModalOpen(false)}
+          onAddMedication={handleAddMedication}
+          patient={selectedPatient}
+        />
+      )}
+    </div>
+  );
 
 };
 

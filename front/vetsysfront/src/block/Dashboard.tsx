@@ -40,6 +40,7 @@ import NextAppointment from "@/NextAppointment";
 import TopBar from "@/components/topbar";
 import {Navbar} from "@/components/Nabar/navbar";
 import Hospitalizations from "@/components/hospitalizations/hospitalizations";
+import Consultations from "@/components/consultations/consultations";
 
 export const description =
   "A products dashboard with a sidebar navigation and a main content area. The dashboard has a header with a search input and a user menu. The sidebar has a logo, navigation links, and a card with a call to action. The main content area shows an empty state with a call to action.";
@@ -148,8 +149,16 @@ export const description =
               <NextAppointment appointment={appointment} />
             </div>
 
-            {/* hospitalization */}
-             <Hospitalizations />
+            <div className="flex flex-row gap-16 align-middle justify-center">
+            <div className="flex-1 max-h-max">
+              <Hospitalizations />
+            </div>
+            <div className="flex-1">
+              <Consultations />
+            </div>
+          
+              </div>
+            
           </div>
         </main>
       </div>
