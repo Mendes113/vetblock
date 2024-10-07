@@ -18,7 +18,7 @@ type Animal struct {
 	Breed       string         `json:"breed" gorm:"not null" validate:"required"`
 	Age         int            `json:"age" validate:"gte=0"`
 	Weight      float64        `json:"weight" validate:"gte=0"`
-	Image       []byte         `json:"image" gorm:"type:bytea"` // Armazenando imagem em bytea
+	Image       uuid.UUID         `json:"image" gorm:"type:uuid"` // Armazenando imagem em bytea
 	Description string         `json:"description"`
 	Timestamp   time.Time      `json:"timestamp" gorm:"autoCreateTime"`
 	CreatedAt   time.Time      `json:"created_at" gorm:"autoCreateTime"`

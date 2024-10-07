@@ -26,7 +26,7 @@ func NewDb() *gorm.DB {
 	}
 
 	// Verifica o retorno de erro da migração
-	errMigrate := db.AutoMigrate(&model.User{}, &model.Animal{}, &model.Hospitalization{}, &model.Consultation{}, &model.ConsultationHistory{}, &model.Veterinary{}, &model.Medication{}, &model.Dosage{})
+	errMigrate := db.AutoMigrate(&model.User{}, &model.Animal{}, &model.Hospitalization{}, &model.Consultation{}, &model.ConsultationHistory{}, &model.Veterinary{}, &model.Medication{}, &model.Dosage{}, &model.ImageModel{})
 	if errMigrate != nil {
 		log.Fatalf("failed to auto migrate: %v", errMigrate)
 	}

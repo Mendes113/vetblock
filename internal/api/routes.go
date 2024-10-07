@@ -54,4 +54,14 @@ func SetupRoutes(app *fiber.App) {
 	protected.Get("/medications/batch-number/:batch_number", handlers.GetMedicationByBatchNumberHandler())
 	protected.Get("/medications/name/:name", handlers.GetMedicationByNameHandler())
 	protected.Get("/medications/active-substance/:active_substance", handlers.GetMedicationByActiveSubstanceHandler())
+
+
+	// Rotas para Imagens
+	imageRepo := repository.NewImageRepository() // Repositório de imagens
+	imageService := service.NewImageService(imageRepo)      // Serviço de imagens
+	imageHandler := handlers.NewImageHandler(imageService)
+
+	protected.Get("/animals/:id/image", imageHandler.GetImageByIDHandler)
+
+
 }
