@@ -101,6 +101,7 @@ export const description =
         try {
           const response = await fetch(`http://localhost:8081/api/v1/veterinary/${crvm}/next-consultation`);
           if (!response.ok) {
+            console.log(response);
             throw new Error("Erro ao buscar o próximo compromisso");
           }
           const dataAppointment = await response.json();

@@ -96,8 +96,8 @@ const PatientModal: React.FC<ModalPacienteProps> = ({ patient, loading, onClose 
               </>
             )}
           </CardContent>
-          <div className="mt-6 text-center">
-            <Button className="w-full sm:w-auto text-sm sm:text-xs bg-red-600 hover:bg-red-700 text-white py-2" onClick={onClose}>
+          <div className="mt-6 text-center pb-7">
+            <Button className="w-full sm:w-auto text-sm sm:text-xs bg-red-600 hover:bg-red-700 text-white py-2 mx-auto" onClick={onClose}>
               Fechar
             </Button>
           </div>
