@@ -93,7 +93,7 @@ const PatientModal: React.FC<ModalPacienteProps> = ({ patient, loading, onClose 
                     )}
                   </InfoTable>
                 </div>
-              </>
+              </> 
             )}
           </CardContent>
           <div className="mt-6 text-center pb-7">

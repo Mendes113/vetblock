@@ -7,15 +7,16 @@ import "react-calendar/dist/Calendar.css"; // CSS do react-calendar
 
 
 import NextAppointment from "@/NextAppointment";
-
+import TopBar from "@/components/topbar";
 import {Navbar} from "@/components/Navbar/navbar";
-import Hospitalizations from "../components/hospitalizations/hospitalizations";
+import Hospitalizations from "@/components/hospitalizations/hospitalizations";
 import Consultations from "@/components/consultations/consultations";
+import { Footer } from "@/components/Footer/Footer";
 
 export const description =
   "A products dashboard with a sidebar navigation and a main content area. The dashboard has a header with a search input and a user menu. The sidebar has a logo, navigation links, and a card with a call to action. The main content area shows an empty state with a call to action.";
 
-  export function Dashboard() {
+  export function Home() {
     const [date, setDate] = useState(new Date());
     const [consultations, setConsultations] = useState<Consultation[]>([]);
     const [appointment, setAppointment] = useState<Consultation | null>(null);
@@ -96,9 +97,7 @@ export const description =
 
       <div className="flex flex-1">
         {/* Sidebar for Navbar */}
-        <aside className="">
-          <Navbar />
-        </aside>
+      
 
         {/* Main content area */}
         <main className="flex-1 p-4">
@@ -133,6 +132,7 @@ export const description =
           </div>
         </main>
       </div>
+     
     </div>
   );
 }

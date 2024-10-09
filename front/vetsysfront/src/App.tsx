@@ -1,17 +1,37 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { Dashboard } from './block/Dashboard';
+
+import CreateConsultation from './pages/CreateConsult'; // Importando o componente de criação de consulta
+import { Home } from './pages/Home'; // Página inicial
+import { Navbar } from './components/Navbar/navbar';
+import { Footer } from './components/Footer/Footer';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <Dashboard />
+    <div className="min-h-screen flex flex-col ">
+      <Router>
+        {/* Navbar no topo */}
+        <header>
+          <Navbar />
+        </header>
+
+        {/* Conteúdo principal da página */}
+        <div className="flex-grow  w-[1800px] align-middle mx-auto">
+          <Routes>
+            {/* Rota da página inicial */}
+            <Route path="/" element={<Home />} />
+
+            {/* Rota para criar uma nova consulta */}
+            <Route path="/create-consultation" element={<CreateConsultation onSave={() => {}} />} />
+
+            {/* Outras rotas podem ser adicionadas aqui */}
+          </Routes>
+        </div>
+        {/* Footer no final */}
       
-    </>
+      </Router>
+      <Footer />
+    </div>
   );
 }
 
