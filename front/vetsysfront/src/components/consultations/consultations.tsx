@@ -7,6 +7,8 @@ import { Card, CardContent } from '../ui/card';
 import { Chart } from '../char/chart';
 import { AddMedicationCard } from '../addmed/addMedication';
 import { ChartPie } from '../char/chartpie';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStethoscope, faCalendarCheck, faExclamationTriangle, faDog, faCat } from '@fortawesome/free-solid-svg-icons';
 
 interface Patient {
   id: string;
@@ -150,44 +152,76 @@ const Consultations: React.FC = () => {
           {patients.map((patient) => (
             <CarouselItem key={patient.id} className="pl-2 w-full sm:w-1/2">
               <div className="p-3">
-                <Card className="transition-all hover:shadow-xl rounded-lg hover:-translate-y-2">
-                  <CardContent className="p-6 bg-white rounded-lg shadow-sm">
-                    {/* Foto do Paciente */}
-                    {isLoading ? (
-                      <Skeleton className="w-20 h-20 rounded-full" />
-                    ) : (
-                      <img
-                        src={patient.photoUrl}
-                        alt={`Foto de ${patient.name}`}
-                        className="w-20 h-20 rounded-full object-cover mx-auto transition-transform duration-300 hover:scale-105"
-                      />
-                    )}
+              <Card className="relative transition-all hover:shadow-xl rounded-lg hover:-translate-y-2 overflow-hidden">
+              <CardContent className="p-6 bg-white rounded-lg shadow-sm">
+                {/* Banner de Consulta */}
+                <div className="absolute top-0 left-0 w-full bg-green-600 text-white text-center font-semibold py-2 rounded-t-lg">
+                  <span>Consulta Marcada</span>
+                </div>
 
-                    {/* Informações do Paciente */}
-                    <div className="text-center mt-4">
-                      <h3 className="text-lg font-bold text-gray-800">{patient.name}</h3>
-                      <p className="text-sm text-gray-600">Idade: {patient.age}</p>
-                      <p className="text-sm text-gray-600">Última Consulta: {patient.lastConsultations[0]?.date}</p>
-                      <p className="text-sm text-gray-600">Próxima Medicação: {patient.lastMedications[0]}</p>
+                {/* Ícone de Consulta */}
+                <div className="flex justify-center mt-10 mb-2"> {/* Ajustei o margin-top */}
+                  {isLoading ? (
+                    <img
+                      src="path/to/skeleton.png"
+                      alt="Ícone de Consulta"
+                      className="w-8 h-8"
+                    />
+                  ) : (
+                    <div className='flex space-x-2 align-middle items-center'>
+                    <FontAwesomeIcon icon={faCalendarCheck} className="w-8 h-8 text-green-600" />
+                    <div className='space-x-2'>
+                         
+                    {patient.species === 'Cachorro' ? (
+                   <FontAwesomeIcon icon={faDog} className="w-6 h-6 text-gray-700" />
+                 ) : patient.species === 'Gato' ? (
+                   <FontAwesomeIcon icon={faCat} className="w-6 h-6 text-gray-700" />
+                 ) : null}
+               </div>
+               </div>
+                  )}
+                </div>
 
-                      {/* Botões de Ação */}
-                      <div className="flex justify-center gap-4 mt-4">
-                        <Button 
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" 
-                          onClick={() => openModal(patient)}
-                        >
-                          Ver Detalhes
-                        </Button>
-                        <Button 
-                          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" 
-                          onClick={() => openModalMedication(patient)}
-                        >
-                          Adicionar Medicação
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* Foto do Paciente */}
+                {isLoading ? (
+                  <Skeleton className="w-20 h-20 rounded-full" />
+                ) : (
+                  <div>
+                    
+                  <img
+                    src={patient.photoUrl}
+                    alt={`Foto de ${patient.name}`}
+                    className="w-20 h-20 rounded-full object-cover mx-auto transition-transform duration-300 hover:scale-105"
+                  />
+                  </div>
+                )}
+
+                {/* Informações do Paciente */}
+                <div className="text-center mt-4">
+                  <h3 className="text-lg font-bold text-gray-800">{patient.name}</h3>
+                  <p className="text-sm text-gray-600">Idade: {patient.age}</p>
+                  <p className="text-sm text-gray-600">Última Consulta: {patient.lastConsultations[0]?.date}</p>
+                  <p className="text-sm text-gray-600">Próxima Medicação: {patient.lastMedications[0]}</p>
+
+                  {/* Botões de Ação */}
+                  <div className="flex justify-center gap-4 mt-4">
+                    <Button 
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" 
+                      onClick={() => openModal(patient)}
+                    >
+                      Ver Detalhes
+                    </Button>
+                    <Button 
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" 
+                      onClick={() => openModalMedication(patient)}
+                    >
+                      Adicionar Medicação
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
               </div>
             </CarouselItem>
           ))}
