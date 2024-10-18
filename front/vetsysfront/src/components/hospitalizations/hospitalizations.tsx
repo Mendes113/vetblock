@@ -152,7 +152,7 @@ const Hospitalizations: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 shadow-lg rounded-xl border border-gray-200 mx-auto max-w-7xl">
+    <div className=" bg-gray-50 shadow-lg rounded-xl border border-gray-200 mx-auto max-w-7xl">
       <h2 className="text-2xl font-bold mb-8 text-gray-800 text-center">Pacientes Internados</h2>
 
       {/* Gráfico */}
@@ -162,9 +162,9 @@ const Hospitalizations: React.FC = () => {
 
       {/* Carrossel mostrando 2 pacientes por vez */}
       <Carousel className="w-full max-w-5xl mx-auto">
-        <CarouselContent className="flex -ml-2 w-[500px]">
+        <CarouselContent className="flex ml-3 w-[500px]">
           {patients.map((patient) => (
-            <CarouselItem key={patient.id} className="pl-2 w-full sm:w-1/2"> {/* w-full para telas pequenas, w-1/2 para maiores */}
+            <CarouselItem key={patient.id} className=" w-full sm:w-1/2"> {/* w-full para telas pequenas, w-1/2 para maiores */}
               <div className="p-3">
               <Card className={`relative transition-all hover:shadow-xl rounded-lg hover:-translate-y-2 border-2 ${getCardStyle(patient.species, patient.status)}`}>
                 <CardContent className="p-6 bg-white rounded-lg shadow-sm">
@@ -257,8 +257,8 @@ const Hospitalizations: React.FC = () => {
           ))}
         </CarouselContent>
 
-        <CarouselPrevious className="text-gray-500 hover:text-gray-700" />
-        <CarouselNext className="text-gray-500 hover:text-gray-700" />
+        {/* <CarouselPrevious className="text-gray-500 hover:text-gray-700" />
+        <CarouselNext className="text-gray-500 hover:text-gray-700" /> */}
       </Carousel>
 
       {/* Modais */}

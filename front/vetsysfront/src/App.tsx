@@ -16,7 +16,7 @@ function App() {
         </header>
 
         {/* Conteúdo principal da página */}
-        <div className="flex-grow  w-[1800px] align-middle mx-auto">
+        <div className="flex-grow  w-[1500px] align-middle mx-auto">
           <Routes>
             {/* Rota da página inicial */}
             <Route path="/" element={<Home />} />

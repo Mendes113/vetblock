@@ -8,7 +8,7 @@ import { Chart } from '../char/chart';
 import { AddMedicationCard } from '../addmed/addMedication';
 import { ChartPie } from '../char/chartpie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStethoscope, faCalendarCheck, faExclamationTriangle, faDog, faCat } from '@fortawesome/free-solid-svg-icons';
+import { faStethoscope, faCalendarCheck, faExclamationTriangle, faDog, faCat, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 interface Patient {
   id: string;
@@ -138,7 +138,7 @@ const Consultations: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 shadow-lg rounded-xl border border-gray-200 mx-auto max-w-7xl">
+    <div className="   bg-gray-50 shadow-lg rounded-xl border border-gray-200 mx-auto max-w-7xl">
       <h2 className="text-2xl font-bold mb-8 text-gray-800 text-center">Próximas Consultas</h2>
 
       {/* Gráfico para mostrar o histórico das consultas */}
@@ -225,10 +225,11 @@ const Consultations: React.FC = () => {
               </div>
             </CarouselItem>
           ))}
-        </CarouselContent>
+        </CarouselContent>  
 
-        <CarouselPrevious className="text-gray-500 hover:text-gray-700" />
-        <CarouselNext className="text-gray-500 hover:text-gray-700" />
+        {/* <CarouselPrevious className="text-gray-500 hover:text-gray-700 mr-4" /> */}
+        {/* <CarouselNext className="text-gray-500 hover:text-gray-700 ml-2" /> */}
+
       </Carousel>
 
       {/* Modais */}
