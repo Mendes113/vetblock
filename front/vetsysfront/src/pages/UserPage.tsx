@@ -130,6 +130,153 @@ const UserPage: React.FC = () => {
     return <div className="text-center p-6">Carregando...</div>;
   }
 
+
+
+  const RomanceCarousel: React.FC = () => (
+    <Carousel className="w-full max-w-3xl mx-auto my-6">
+      <CarouselContent className="flex">
+        <CarouselItem className="flex-none w-full px-2">
+        <Card className="bg-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+  <img 
+    src="https://tenor.com/view/spider-man-tobey-maguire-sad-cry-crying-gif-4535637.gif" // Substitua pelo caminho da sua imagem
+    alt="Desde que te conheci..."
+    className="w-full object-contain rounded-t-xl"
+  />
+  <CardContent>
+    <h3 className="text-lg font-semibold text-center mb-2">Quando te conheci</h3>
+    <p className="text-gray-600 text-center">Eu tava meio meh</p>
+    <p className="text-gray-600 text-center">Achando que tava faltando algo</p>
+
+
+
+  </CardContent>
+</Card>
+
+        </CarouselItem>
+        
+        <CarouselItem className="flex-none w-full px-2">
+                    <Card className="bg-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img 
+                src="https://cdn.discordapp.com/attachments/1058806818224222278/1297248861387227206/efea0b5b-7b6e-4169-91bc-0c800d4a4926.jpeg?ex=67153ca6&is=6713eb26&hm=a6d038dc6a6ef8c53c0b11f4f2f1081df6303eeb444294f5cfb004ca854fb420&" // Substitua pelo caminho da sua imagem
+                alt="Desde que te conheci..."
+                className="w-80 object-contain rounded-t-xl max-h-lvh mx-auto"
+            />
+            <CardContent>
+                <h3 className="text-lg font-semibold text-center mb-2">Talvez</h3>
+                <p className="text-gray-600 text-center">Acho que faltavam gatos na minha vida</p>
+                <p className="text-gray-600 text-center">E ai você apareceu,</p>
+                <p className="text-gray-600 text-center">Bom, na verdade...</p>
+
+
+
+
+            </CardContent>
+            </Card>
+        </CarouselItem>
+  
+        <CarouselItem className="flex-none w-full px-2">
+        <Card className="bg-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img 
+                src="https://s3.ezgif.com/tmp/ezgif-3-5a72e309e6.gif" // Substitua pelo caminho da sua imagem
+                alt="Desde que te conheci..."
+                className="w-80 object-contain rounded-t-xl max-h-lvh flex mx-auto"
+            />
+            <CardContent>
+                <h3 className="text-lg font-semibold text-center mb-2">Eu apareci</h3>
+                <p className="text-gray-600 text-center">Com esse babaquinha</p>
+                <p className="text-gray-600 text-center">Não tenho o que dizer, realmente queria muito ver você</p>
+
+
+
+
+            </CardContent>
+            </Card>
+        </CarouselItem>
+        <CarouselItem className="flex-none w-full px-2">
+        <Card className="bg-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img 
+                src="https://i.pinimg.com/originals/23/a9/4a/23a94a6623bce3ad6df176c0f997833d.jpg" // Substitua pelo caminho da sua imagem
+                alt="Desde que te conheci..."
+                className="w-full object-contain rounded-t-xl max-h-lvh flex mx-auto"
+            />
+            <CardContent>
+                <h3 className="text-lg font-semibold text-center mb-2">Acho que chegou a hora</h3>
+                <p className="text-gray-600 text-center">Se quiser correr é agora</p>
+
+            </CardContent>
+            </Card>
+        </CarouselItem>
+        <CarouselItem className="flex-none w-full px-2">
+        <Card className="bg-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img 
+                src="https://media.discordapp.net/attachments/1058805305112285258/1297253924813799474/ezgif-2-6e269c04d3.png?ex=6715415d&is=6713efdd&hm=7997aabffd884e4962caf5e73539984ba8cc222dac3c127c1a9c7d726a993d47&=&format=webp&quality=lossless&width=261&height=468" // Substitua pelo caminho da sua imagem
+                alt="Desde que te conheci..."
+                className="w-80 object-contain rounded-t-xl max-h-lvh flex mx-auto"
+            />
+            <CardContent>
+                <h3 className="text-lg font-semibold text-center mb-2">Caso Contrario</h3>
+                <p className="text-gray-600 text-center">Eu queria saber se teria a humildade de me deixar viver um pouco mais com o tigrinho e a sequela</p>
+
+            </CardContent>
+            </Card>
+        </CarouselItem>
+        <CarouselItem className="flex-none w-full px-2">
+        <Card className="bg-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img 
+                src="https://media-gru2-1.cdn.whatsapp.net/v/t61.24694-24/420662490_893772325943858_4395920032008760631_n.jpg?ccb=11-4&oh=01_Q5AaIAMmywwrIHcPoiVyrRFb_NHgZHXPK46xiSt_pEXOjaTy&oe=671FE621&_nc_sid=5e03e0&_nc_cat=110" // Substitua pelo caminho da sua imagem
+                alt="Desde que te conheci..."
+                className="w-full object-contain rounded-t-xl max-h-lvh flex mx-auto"
+            />
+            <CardContent>
+                <h3 className="text-lg font-semibold text-center mb-2">E é claro</h3>
+                <p className="text-gray-600 text-center">Com a maior gatinha de todas:</p>
+
+            </CardContent>
+            </Card>
+        </CarouselItem>
+
+        <CarouselItem className="flex-none w-full px-2">
+        <Card className="bg-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img 
+                src="https://cdn.discordapp.com/attachments/1058805305112285258/1297255317343834112/IMG-20240922-WA0019.jpg?ex=671542a9&is=6713f129&hm=fe85389cefee4800c4f8bffadac5a2f3cb18aede2e79f1191c4f78ceaac265a4&" // Substitua pelo caminho da sua imagem
+                alt="Desde que te conheci..."
+                className="w-96 object-contain rounded-t-xl max-h-lvh flex mx-auto"
+            />
+            <CardContent>
+                <h3 className="text-lg font-semibold text-center mb-2">Só quero dizer que você me faz muito feliz</h3>
+                <p className="text-gray-600 text-center">E que eu eu gostaria muito de continuar assim pro resto da vida</p>
+                <p className="text-gray-600 text-center">Mas pra isso eu preciso saber se...</p>
+
+
+            </CardContent>
+            </Card>
+        </CarouselItem>
+
+        <CarouselItem className="flex-none w-full px-2">
+        <Card className="bg-pink-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img 
+                src="https://cdn.discordapp.com/attachments/1058805305112285258/1297256463126888549/Cursed_Heart_Images.gif?ex=671543ba&is=6713f23a&hm=1f0fc85b77220001b8fd9ec57a9eaf8cd23719877a94c8c81f751498d3ca1ea0&" // Substitua pelo caminho da sua imagem
+                alt="Desde que te conheci..."
+                className="w-96 object-contain rounded-t-xl max-h-lvh flex mx-auto"
+            />
+            <CardContent>
+                <h3 className="text-lg font-semibold text-center mb-2">Você quer Namorar comigo?</h3>
+                <p className="text-gray-600 text-center">ps: se aceitar vai ter que ser mãe do maluco do osvaldo</p>
+                <p className="text-gray-600 text-center">ps2: se não aceitar eu pego a faca de dentro da mochila</p>
+
+               
+
+            </CardContent>
+            </Card>
+        </CarouselItem>
+
+      </CarouselContent>
+      <CarouselNext />
+      <CarouselPrevious />
+    </Carousel>
+  );
+
+
   return (
     <div className="p-6">
       {/* Card de Informações do Usuário */}
@@ -213,6 +360,10 @@ const UserPage: React.FC = () => {
           )}
         </div>
       </div>
+
+
+    <RomanceCarousel />
+
     </div>
   );
 };
