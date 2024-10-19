@@ -5,3 +5,4 @@ tmp/
 tmp/main.exe
 tmp/build-errors.log
 node_modules/
+vetsys.json
