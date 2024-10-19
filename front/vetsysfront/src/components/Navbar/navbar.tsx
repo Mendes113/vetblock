@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { FaSearch, FaUser } from "react-icons/fa";
+import { signOut } from "firebase/auth";
+import { auth } from "@/hooks/firebaseconfig";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,6 +18,19 @@ export const Navbar = () => {
 
   const toggleNavbar = () => setIsOpen((prev) => !prev);
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log("Logout bem-sucedido");
+      // Aqui você pode redirecionar o usuário para a página de login ou home
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      alert("Erro ao fazer logout. Tente novamente.");
+    }
+  };
+
+  
+  
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -118,7 +133,7 @@ export const Navbar = () => {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           </div>

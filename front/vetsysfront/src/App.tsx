@@ -1,3 +1,4 @@
+// src/App.tsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
@@ -7,6 +8,8 @@ import { Navbar } from './components/Navbar/navbar';
 import { Footer } from './components/Footer/Footer';
 import PatientsPage from './pages/Patients';
 import UserPage from './pages/UserPage';
+import Login from './pages/Login';
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 
 function App() {
   return (
@@ -20,13 +23,19 @@ function App() {
         {/* Conteúdo principal da página */}
         <div className="flex-grow  w-[1500px] align-middle mx-auto">
           <Routes>
-            {/* Rota da página inicial */}
+            {/* Rota da página de login */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Rotas públicas */}
             <Route path="/" element={<Home />} />
 
-            {/* Rota para criar uma nova consulta */}
-            <Route path="/create-consultation" element={<CreateConsultation onSave={() => {}} />} />
-            <Route path="/patients-search" element={<PatientsPage/>} />
-            <Route path="/users" element={<UserPage/>} />
+            {/* Rotas protegidas */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/create-consultation" element={<CreateConsultation onSave={() => {}} />} />
+              <Route path="/patients-search" element={<PatientsPage />} />
+              <Route path="/users" element={<UserPage />} />
+            </Route>
+            
             {/* Outras rotas podem ser adicionadas aqui */}
           </Routes>
         </div>

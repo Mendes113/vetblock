@@ -22,15 +22,19 @@ type Veterinarian struct {
 }
 
 func NewTutor(cpf, name, email, phone, address, password string) (*Tutor, error) {
-
-	if !isValidCPF(cpf) {
-		return nil, errors.New("CPF inválido")
-	}
-	return &Tutor{
-		CPFTutor: cpf,
-		Name: name,
-		Address: address,
-	},nil
+    if !isValidCPF(cpf) {
+        return nil, errors.New("CPF inválido")
+    }
+    return &Tutor{
+        User: User{
+            Email:    email,
+            Phone:    phone,
+            UserType: TutorType,
+        },
+        CPFTutor: cpf,
+        Name:     name,
+        Address:  address,
+    }, nil
 }
 
 func (t *Tutor) GetCPF() string {
@@ -53,9 +57,6 @@ func (t *Tutor) GetAddress() string {
 	return t.Address
 }
 
-func (t *Tutor) GetPassword() string {
-	return t.Password
-}
 
 func (t *Tutor) SetCPF(cpf string) {
 	t.CPFTutor = cpf
@@ -76,11 +77,6 @@ func (t *Tutor) SetPhone(phone string) {
 func (t *Tutor) SetAddress(address string) {
 	t.Address = address
 }
-
-func (t *Tutor) SetPassword(password string) {
-	t.Password = password
-}
-
 
 func cleanCPF(cpf string) string {
     cleaned := ""

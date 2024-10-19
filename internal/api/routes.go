@@ -2,7 +2,7 @@ package api
 
 import (
 	"vetblock/internal/api/handlers"
-	"vetblock/internal/db" // Add this import
+	"vetblock/internal/db"
 	"vetblock/internal/db/repository"
 	"vetblock/internal/service"
 
@@ -11,17 +11,21 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
-	app.Post("/api/register", handlers.SignUp)
-	app.Post("/api/login", handlers.SignIn)
-	//middleware
+	// Middleware CORS para permitir requisições de outros domínios
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*", // Replace with specific origins if needed
+		AllowOrigins: "*", // Ajuste para origens específicas em produção por segurança
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
 
+	// Rotas de autenticação
+	app.Post("/api/register", handlers.SignUp)
+	app.Post("/api/login", handlers.Authenticate)
+
+	// Configurar grupo de rotas protegidas
 	protected := app.Group("/api/v1")
-	// protected.Use(handlers.Auth)
+	protected.Use(handlers.Auth) // Adicionando middleware de autenticação para rotas protegidas
+
 	// Rotas para Animais
 	protected.Post("/animals", handlers.AddAnimalHandler())
 	protected.Get("/animals", handlers.GetAllAnimalsHandler())
@@ -31,13 +35,11 @@ func SetupRoutes(app *fiber.App) {
 			repository.NewDosageRepository(
 				repository.GetDB(),
 			))))
-	// protected.Get("/animals/:id", handlers.GetAnimalByIDHandler())
 	protected.Delete("/animals/:id", handlers.DeleteAnimalHandler())
 
 	// Rotas para Consultas
 	protected.Post("/consultations", handlers.AddConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
 	protected.Get("/veterinary/:crvm/next-consultation", handlers.GetNextConsultationHandler(repository.NewConsultationRepository(db.GetDB())))
-	// Rotas para Veterinários
 	protected.Get("/consultations/:crvm", handlers.GetAllConsultationsByVeterinaryHandler(repository.NewConsultationRepository(db.GetDB())))
 	protected.Post("/veterinaries", handlers.AddVeterinaryHandler())
 	protected.Get("/consultations/patient/:animal_id", handlers.GetConsultsByAnimalIDHandler(repository.NewConsultationRepository(db.GetDB())))
@@ -55,13 +57,10 @@ func SetupRoutes(app *fiber.App) {
 	protected.Get("/medications/name/:name", handlers.GetMedicationByNameHandler())
 	protected.Get("/medications/active-substance/:active_substance", handlers.GetMedicationByActiveSubstanceHandler())
 
-
 	// Rotas para Imagens
-	imageRepo := repository.NewImageRepository() // Repositório de imagens
-	imageService := service.NewImageService(imageRepo)      // Serviço de imagens
-	imageHandler := handlers.NewImageHandler(imageService)
+	imageRepo := repository.NewImageRepository()          // Repositório de imagens
+	imageService := service.NewImageService(imageRepo)    // Serviço de imagens
+	imageHandler := handlers.NewImageHandler(imageService) // Handler de imagens
 
 	protected.Get("/animals/:id/image", imageHandler.GetImageByIDHandler)
-
-
 }

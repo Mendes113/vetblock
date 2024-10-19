@@ -24,19 +24,20 @@ func isValidCRVM(crvm string) bool {
 	return re.MatchString(crvm)
 }
 
-func NewVeterinary(crvm, name, lastName, email, phone string) (*Veterinary, error) {
-	if !isValidCRVM(crvm) {
-		return nil, errors.New("CRVM inválido")
-	}
-	return &Veterinary{
-		CRVM:      crvm,
-		Name:      name,
-		LastName:  lastName,
-		Email:     email,
-		Phone:     phone,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}, nil
+func NewVeterinarian(crmv, name, email, phone, specialty string) (*Veterinarian, error) {
+    if !isValidCRVM(crmv) {
+        return nil, errors.New("CRMV inválido")
+    }
+    return &Veterinarian{
+        User: User{
+            Email:    email,
+            Phone:    phone,
+            UserType: VeterinarianType,
+        },
+        CRMV:      crmv,
+        Name:      name,
+        Specialty: specialty,
+    }, nil
 }
 
 func (v *Veterinary) GetCRVM() string {
