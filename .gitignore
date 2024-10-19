@@ -4,3 +4,4 @@ vetsys-40722-firebase-adminsdk-uc324-c4c4689cf3.json
 tmp/
 tmp/main.exe
 tmp/build-errors.log
+node_modules/

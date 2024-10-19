@@ -161,8 +161,8 @@ const Hospitalizations: React.FC = () => {
       </div>
 
       {/* Carrossel mostrando 2 pacientes por vez */}
-      <Carousel className="w-full max-w-5xl mx-auto">
-        <CarouselContent className="flex ml-3 w-[500px]">
+      <Carousel className="w-full max-w-5xl mx-auto ml-3">
+        <CarouselContent className="flex  w-[500px]">
           {patients.map((patient) => (
             <CarouselItem key={patient.id} className=" w-full sm:w-1/2"> {/* w-full para telas pequenas, w-1/2 para maiores */}
               <div className="p-3">

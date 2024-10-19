@@ -147,7 +147,7 @@ const Consultations: React.FC = () => {
       </div>
 
       {/* Carrossel mostrando informações dos pacientes */}
-      <Carousel className="w-full max-w-5xl mx-auto">
+      <Carousel className="w-full max-w-5xl mx-auto ml-3">
         <CarouselContent className="flex -ml-2 w-[500px]">
           {patients.map((patient) => (
             <CarouselItem key={patient.id} className="pl-2 w-full sm:w-1/2">

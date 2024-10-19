@@ -1,0 +1,24 @@
+meta {
+  name: AddAnimal
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8081/api/v1/animals
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Osvaldo",
+    "species": "Gato",
+    "breed": "SRD",
+    "weight": 5.5,
+    "age": 3,
+    "description": "Gato garente e sarrador",
+    "cpf_tutor": "12345678900"
+  }
+  
+}

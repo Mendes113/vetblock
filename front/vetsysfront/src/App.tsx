@@ -5,6 +5,8 @@ import CreateConsultation from './pages/CreateConsult'; // Importando o componen
 import { Home } from './pages/Home'; // Página inicial
 import { Navbar } from './components/Navbar/navbar';
 import { Footer } from './components/Footer/Footer';
+import PatientsPage from './pages/Patients';
+import UserPage from './pages/UserPage';
 
 function App() {
   return (
@@ -23,7 +25,8 @@ function App() {
 
             {/* Rota para criar uma nova consulta */}
             <Route path="/create-consultation" element={<CreateConsultation onSave={() => {}} />} />
-
+            <Route path="/patients-search" element={<PatientsPage/>} />
+            <Route path="/users" element={<UserPage/>} />
             {/* Outras rotas podem ser adicionadas aqui */}
           </Routes>
         </div>

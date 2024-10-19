@@ -3,11 +3,12 @@ import Link from "next/link";
 import { Bell, Home, ShoppingCart, LineChart, Users } from "lucide-react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDog, faNotesMedical, faUser } from "@fortawesome/free-solid-svg-icons"; // Adicionando o ícone de perfil
+import { faDog, faNotesMedical, faUser, faSearch } from "@fortawesome/free-solid-svg-icons"; // Adicionando o ícone de perfil
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { FaSearch, FaUser } from "react-icons/fa";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +47,7 @@ export const Navbar = () => {
               <Users className="h-5 w-5 mr-2" /> Customers
             </Link>
             <Link href="#" className="flex items-center">
-              <LineChart className="h-5 w-5 mr-2" /> Analytics
+              <FaSearch className="h-5 w-5 mr-2" /> Search 
             </Link>
           </nav>
 
@@ -70,9 +71,13 @@ export const Navbar = () => {
           </Link>
         </div>
         <nav className="flex-1 px-2 text-sm font-medium lg:px-4">
-          <Link href="#" className="flex items-center gap-3 px-3 py-2 hover:bg-muted transition-colors rounded-lg">
+          <Link href="/" className="flex items-center gap-3 px-3 py-2 hover:bg-muted transition-colors rounded-lg">
             <Home className="h-4 w-4" />
             {isOpen && <span>Dashboard</span>}
+          </Link>
+          <Link href="/patients-search" className="flex items-center gap-3 px-3 py-2 hover:bg-muted transition-colors rounded-lg">
+            <FaSearch className="h-4 w-4" />
+            {isOpen && <span>Search</span>}
           </Link>
           <Link href="#" className="flex items-center gap-3 px-3 py-2 hover:bg-muted transition-colors rounded-lg">
             <ShoppingCart className="h-4 w-4" />
@@ -87,10 +92,7 @@ export const Navbar = () => {
             <Users className="h-4 w-4" />
             {isOpen && <span>Customers</span>}
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-3 py-2 hover:bg-muted transition-colors rounded-lg">
-            <LineChart className="h-4 w-4" />
-            {isOpen && <span>Analytics</span>}
-          </Link>
+          
         </nav>
 
         {/* Ícone de perfil fixado no canto inferior esquerdo */}
@@ -111,7 +113,7 @@ export const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel><a href="/users">My Account</a></DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>

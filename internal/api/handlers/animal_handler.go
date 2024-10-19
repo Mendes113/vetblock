@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"log"
+	"strings"
 	"time"
 	"vetblock/internal/db/model"
 	"vetblock/internal/db/repository"
@@ -46,6 +47,9 @@ func AddAnimalHandler() fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
 		}
 
+		//validate cpf(clean)
+		animal.CPFTutor = CleanCpf(animal.CPFTutor)
+
 		// Convert the AnimalResponse to Animal
 		animalModel := model.Animal{
 			ID:          uuid.New(),
@@ -73,6 +77,12 @@ func AddAnimalHandler() fiber.Handler {
 
 		return c.Status(fiber.StatusCreated).JSON(animal)
 	}
+}
+
+func CleanCpf(cpf string) string {
+	cpf = strings.ReplaceAll(cpf, ".", "")
+	cpf = strings.ReplaceAll(cpf, "-", "")
+	return cpf
 }
 
 func UpdateAnimalHandler() fiber.Handler {
@@ -156,7 +166,7 @@ func AddDosageHandler(dosageService *service.DosageService) fiber.Handler {
 			ID:                dosageID,
 			AnimalID:          dosage.AnimalID,
 			MedicationID:      dosage.MedicationID,
-			StartDate:         model.CustomDate{Time: time.Now().Truncate(24 * time.Hour)},    // Truncando hora para manter só a data
+			StartDate:         model.CustomDate{Time: time.Now().Truncate(24 * time.Hour)},          // Truncando hora para manter só a data
 			EndDate:           model.CustomDate{Time: dosage.EndDate.Time.Truncate(24 * time.Hour)}, // Truncando hora para manter só a data
 			Quantity:          dosage.Quantity,
 			Dosage:            dosage.Dosage,
